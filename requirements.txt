@@ -1,0 +1,12 @@
+# openai
+chainlit
+chromadb
+# https://github.com/mediawiki-utilities/python-mwxml/pull/19
+git+https://github.com/gdedrouas/python-mwxml@xml_format_0.11
+git+https://github.com/mediawiki-utilities/python-mwtypes@updates_schema_0.11
+jq
+langchain
+mwparserfromhell
+sentence-transformers
+tiktoken
+torch[cpu]

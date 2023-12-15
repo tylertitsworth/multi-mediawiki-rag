@@ -1,0 +1,8 @@
+.chainlit
+.env
+.vscode/
+**__pycache__**
+chainlit.md
+data/
+model/
+sources/

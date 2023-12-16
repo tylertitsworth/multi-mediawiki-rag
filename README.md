@@ -66,7 +66,8 @@ multi-mediawiki-rag
 │       └── *
 ├── requirements.txt
 └── sources
-    └── <wikiname>_pages_current.xml
+    ├── <wikiname>_pages_current.xml
+    └── *
 ```
 
 ### System Prompt

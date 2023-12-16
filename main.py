@@ -33,9 +33,9 @@ class MultiWiki:
                 self.wikis = {wiki: "" for wiki in data['mediawikis']}
             else:
                 setattr(self, key, val)
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--no-embed', dest='embed', action='store_false')
-        self.args = parser.parse_args()
+
+    def set_args(self, args):
+        self.args = args
 
 def create_vector_db(source, wikis):
     if not source:
@@ -169,13 +169,21 @@ async def on_message(message: cl.Message):
     await cl.Message(content=answer, elements=text_elements).send()
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--no-embed', dest='embed', action='store_false')
+
     wiki = MultiWiki()
+    wiki.set_args(parser.parse_args())
+
     if wiki.args.embed:
         create_vector_db(wiki.source, wiki.wikis)
+
     chain = create_chain(wiki.model)
+
     if not wiki.prompt:
         print("No Prompt for Chatbot found")
         exit(1)
+
     res = chain(wiki.prompt)
     answer = res["answer"]
     print([source_doc.page_content for source_doc in res["source_documents"]])

@@ -2,12 +2,11 @@ from langchain.cache import SQLiteCache
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
+from langchain.chat_models import ChatOllama
 from langchain.document_loaders import MWDumpLoader
 from langchain.document_loaders.merge import MergedDataLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.globals import set_llm_cache
-from langchain.llms import Ollama
-from langchain.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -37,21 +36,21 @@ class MultiWiki:
     def set_args(self, args):
         self.args = args
 
-def create_vector_db(source, wikis):
+def create_vector_db(embeddings_model, source, wikis):
     if not source:
         print("No data sources found")
         exit(1)
 
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", cache_folder="./model")
+    embeddings = HuggingFaceEmbeddings(model_name=embeddings_model, cache_folder="./model")
 
     for wiki in wikis.keys():
         # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
         wikis[wiki] = MWDumpLoader(
-            file_path=f"{source}/{wiki}_pages_current.xml",
             encoding="utf-8",
+            file_path=f"{source}/{wiki}_pages_current.xml",
             skip_redirects=True,
-            stop_on_error=False
+            stop_on_error=False,
         )
     # https://python.langchain.com/docs/integrations/document_loaders/merge_doc
     loader_all = MergedDataLoader(loaders=wikis.values())
@@ -67,64 +66,38 @@ def create_vector_db(source, wikis):
     )
     vectordb.persist()
 
-def create_chain(model):
-    system_prompt="""
-Given the following extracted parts of a long document and a question, create a final answer with references ("SOURCES"). 
-If you don't know the answer, just say that you don't know. Don't try to make up an answer.
-ALWAYS return a "SOURCES" part in your answer.
----
-Content: {context}
----
-"""
-    human_prompt = "Question: ```{question}```"
+def create_chain(embeddings_model, model):
     # https://python.langchain.com/docs/modules/memory/chat_messages/
     message_history = ChatMessageHistory()
-    # https://python.langchain.com/docs/modules/model_io/prompts/prompt_templates/
-    prompt = ChatPromptTemplate.from_messages(
-        messages=[
-            SystemMessagePromptTemplate.from_template(system_prompt),
-            HumanMessagePromptTemplate.from_template(human_prompt)
-        ]
-    )
     # https://python.langchain.com/docs/modules/memory/
     memory = ConversationBufferMemory(
+        chat_memory=message_history,
         memory_key="chat_history",
         output_key="answer",
-        chat_memory=message_history,
         return_messages=True,
     )
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub
     embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2",
-        cache_folder="./model"
+        cache_folder="./model",
+        model_name=embeddings_model,
     )
     vectordb = Chroma(persist_directory="data", embedding_function=embeddings)
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     # https://python.langchain.com/docs/integrations/llms/llm_caching
     set_llm_cache(SQLiteCache(database_path="memory/cache.db"))
-    if model:
-        # https://python.langchain.com/docs/integrations/llms/huggingface_pipelines
-        model = HuggingFacePipeline.from_model_id(
-            model_id=model,
-            cache=True,
-            callback_manager=callback_manager,
-            pipeline_kwargs={"max_new_tokens": 10},
-            task="text-generation",
-        )
-    else:
-        # https://python.langchain.com/docs/integrations/llms/ollama
-        model = Ollama(
-            model="llama2",
-            callback_manager=callback_manager,
-        )
+    # https://python.langchain.com/docs/integrations/llms/ollama
+    model = ChatOllama(
+        cache=True,
+        callback_manager=callback_manager,
+        model=model,
+    )
     # https://api.python.langchain.com/en/latest/chains/langchain.chains.conversational_retrieval.base.ConversationalRetrievalChain.html
     chain = ConversationalRetrievalChain.from_llm(
-        llm=model,
         chain_type="stuff",
-        retriever=vectordb.as_retriever(),
+        llm=model,
         memory=memory,
-        combine_docs_chain_kwargs={"prompt": prompt},
-        return_source_documents=True
+        retriever=vectordb.as_retriever(),
+        return_source_documents=True,
     )
 
     return chain
@@ -134,7 +107,10 @@ Content: {context}
 @cl.on_chat_start
 async def on_chat_start():
     wiki = MultiWiki()
-    chain = create_chain(wiki.model)
+    chain = create_chain(
+        wiki.embeddings_model,
+        wiki.model,
+    )
     cl.user_session.set("chain", chain)
 
 
@@ -176,9 +152,16 @@ if __name__ == "__main__":
     wiki.set_args(parser.parse_args())
 
     if wiki.args.embed:
-        create_vector_db(wiki.source, wiki.wikis)
+        create_vector_db(
+            wiki.embeddings_model,
+            wiki.source,
+            wiki.wikis,
+        )
 
-    chain = create_chain(wiki.model)
+    chain = create_chain(
+        wiki.embeddings_model,
+        wiki.model,
+    )
 
     if not wiki.prompt:
         print("No Prompt for Chatbot found")

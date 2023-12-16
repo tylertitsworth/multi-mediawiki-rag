@@ -1,0 +1,8 @@
+mediawikis:
+  - dungeons
+  - eberron
+  - forgottenrealms
+  - planescape
+prompt: "What is a Tako?"
+model: null # "Intel/neural-chat-7b-v3-3"
+source: ./sources

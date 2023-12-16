@@ -1,0 +1,13 @@
+**__pycache__**
+_config.yml
+.env
+.devcontainer
+.git
+.github
+.gitignore
+.vscode
+data
+Dockerfile
+memory
+model
+sources

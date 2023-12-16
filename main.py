@@ -1,34 +1,54 @@
+from langchain.cache import SQLiteCache
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.document_loaders import MWDumpLoader
 from langchain.document_loaders.merge import MergedDataLoader
 from langchain.embeddings import HuggingFaceEmbeddings
+from langchain.globals import set_llm_cache
+from langchain.llms import Ollama
 from langchain.llms.huggingface_pipeline import HuggingFacePipeline
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
+from sys import exit
 
+import argparse
 import chainlit as cl
+import yaml
 
-# from dotenv import load_dotenv
-# load_dotenv()
+class MultiWiki:
+    def __init__(self):
+        try:
+            with open('config.yaml', 'r', encoding='utf-8') as file:
+                data = yaml.safe_load(file)
+        except FileNotFoundError:
+            print("Error: File config.yaml not found.")
+        except yaml.YAMLError as e:
+            print(f"Error reading YAML file: {e}")
+        
+        for key, val in data.items():
+            if key == 'mediawikis':
+                self.wikis = {wiki: "" for wiki in data['mediawikis']}
+            else:
+                setattr(self, key, val)
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--no-embed', dest='embed', action='store_false')
+        self.args = parser.parse_args()
 
-def create_vector_db():
+def create_vector_db(source, wikis):
+    if not source:
+        print("No data sources found")
+        exit(1)
+
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub
     embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2", cache_folder="./model")
 
-    wikis = {
-        "dungeons": "",
-        "eberron": "",
-        "forgottenrealms": "",
-        "planescape": "",
-    }
     for wiki in wikis.keys():
         # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
         wikis[wiki] = MWDumpLoader(
-            file_path=f"sources/{wiki}_pages_current.xml",
+            file_path=f"{source}/{wiki}_pages_current.xml",
             encoding="utf-8",
             skip_redirects=True,
             stop_on_error=False
@@ -47,12 +67,12 @@ def create_vector_db():
     )
     vectordb.persist()
 
-def create_chain():
+def create_chain(model):
     system_prompt="""
 Given the following extracted parts of a long document and a question, create a final answer with references ("SOURCES"). 
 If you don't know the answer, just say that you don't know. Don't try to make up an answer.
 ALWAYS return a "SOURCES" part in your answer.
-----
+---
 Content: {context}
 ---
 """
@@ -75,18 +95,28 @@ Content: {context}
     )
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub
     embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2", cache_folder="./model"
+        model_name="sentence-transformers/all-MiniLM-L6-v2",
+        cache_folder="./model"
     )
     vectordb = Chroma(persist_directory="data", embedding_function=embeddings)
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-    # https://python.langchain.com/docs/integrations/llms/huggingface_pipelines
-    model = HuggingFacePipeline.from_model_id(
-        model="Intel/neural-chat-7b-v3-1",
-        task="text-generation",
-        pipeline_kwargs={"max_new_tokens": 10},
-        verbose=False,
-        callback_manager=callback_manager,
-    )
+    # https://python.langchain.com/docs/integrations/llms/llm_caching
+    set_llm_cache(SQLiteCache(database_path="memory/cache.db"))
+    if model:
+        # https://python.langchain.com/docs/integrations/llms/huggingface_pipelines
+        model = HuggingFacePipeline.from_model_id(
+            model_id=model,
+            cache=True,
+            callback_manager=callback_manager,
+            pipeline_kwargs={"max_new_tokens": 10},
+            task="text-generation",
+        )
+    else:
+        # https://python.langchain.com/docs/integrations/llms/ollama
+        model = Ollama(
+            model="llama2",
+            callback_manager=callback_manager,
+        )
     # https://api.python.langchain.com/en/latest/chains/langchain.chains.conversational_retrieval.base.ConversationalRetrievalChain.html
     chain = ConversationalRetrievalChain.from_llm(
         llm=model,
@@ -96,13 +126,15 @@ Content: {context}
         combine_docs_chain_kwargs={"prompt": prompt},
         return_source_documents=True
     )
+
     return chain
 
 # https://docs.chainlit.io/integrations/langchain
 # https://docs.chainlit.io/examples/qa
 @cl.on_chat_start
 async def on_chat_start():
-    chain = create_chain()
+    wiki = MultiWiki()
+    chain = create_chain(wiki.model)
     cl.user_session.set("chain", chain)
 
 
@@ -136,10 +168,14 @@ async def on_message(message: cl.Message):
 
     await cl.Message(content=answer, elements=text_elements).send()
 
-
 if __name__ == "__main__":
-    create_vector_db()
-    chain = create_chain()
-    res = chain("List every octopus monster in the forgotten realms")
+    wiki = MultiWiki()
+    if wiki.args.embed:
+        create_vector_db(wiki.source, wiki.wikis)
+    chain = create_chain(wiki.model)
+    if not wiki.prompt:
+        print("No Prompt for Chatbot found")
+        exit(1)
+    res = chain(wiki.prompt)
     answer = res["answer"]
     print([source_doc.page_content for source_doc in res["source_documents"]])

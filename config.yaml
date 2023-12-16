@@ -1,8 +1,12 @@
+# Huggingface
+embeddings_model: sentence-transformers/all-mpnet-base-v2
+# Ollama
+model: volo
+
 mediawikis:
   - dnd5e
   - eberron
   - forgottenrealms
   - planescape
 prompt: "What is a Tako?"
-model: null # "Intel/neural-chat-7b-v3-3"
 source: ./sources

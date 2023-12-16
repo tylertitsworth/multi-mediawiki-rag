@@ -12,57 +12,63 @@
     - [System Prompt](#system-prompt)
   - [Quickstart](#quickstart)
     - [Prerequisites](#prerequisites)
+    - [Create Custom LLM](#create-custom-llm)
     - [Create Vector Database](#create-vector-database)
       - [Expected Output](#expected-output)
     - [Start Chatbot](#start-chatbot)
 
 ## About
 
-[Mediawikis](https://en.wikipedia.org/wiki/MediaWiki) hosted by [Fandom](https://www.fandom.com/) usually allow you to download an XML dump of the entire wiki as it currently exists. This project primarily leverages [Langchain](https://github.com/langchain-ai/langchain) with a few other open source projects to combine many of the readily available quickstart guides into a complete vertical application based on mediawiki data.
+[Mediawikis](https://en.wikipedia.org/wiki/MediaWiki) hosted by [Fandom](https://www.fandom.com/) usually allow you to download an XML dump of the entire wiki as it currently exists. This project primarily leverages [lc](https://github.com/langchain-ai/langchain) with a few other open source projects to combine many of the readily available quickstart guides into a complete vertical application based on mediawiki data.
 
 ### Architecture
 
 ```mermaid
 graph TD;
-    Huggingface --Sentence-Transformer --> db
-    Ollama --llama2--> Model --> Langchain
-    Huggingface --any-llm--> Model
-    cache[(cache)] <--sqlite3--> Langchain
-    xml-dump-a --MWDumpLoader--> Text-Splitter
-    xml-dump-b --MWDumpLoader--> Text-Splitter
-    xml-dump-c --MWDumpLoader--> Text-Splitter
-    Text-Splitter --> db
-    db[(Chroma)] --Retriever--> Langchain
-    Memory <--Chat-History--> Langchain
-    Prompt --DocumentQA--> Langchain
-    Langchain <-.-> id(((Chainlit)))
+    Huggingface --Sentence Transformer --> emb
+    a[/xml dump a/] --MWDumpLoader--> ts
+    b[/xml dump b/] --MWDumpLoader--> ts
+    c[/xml dump c/] --MWDumpLoader--> ts
+    ts{Text Splitter} --> emb{Embeddings} --> db
+    db[(Chroma)] --Retriever--> lc
+    Ollama --Modelfile--> lc
+    Memory <--Chat History--> lc
+    Prompt --DocumentQA--> lc
+    lc{Langchain} <-.-> cl(((Chainlit)))
+    cache1[(Chat $)] <--sqlite3--> lc
+    cache2[(Server $)] <--sqlite3--> cl
     click db href "https://github.com/chroma-core/chroma"
     click Huggingface href "https://huggingface.co/"
-    click id href "https://github.com/Chainlit/chainlit"
-    click Langchain href "https://github.com/langchain-ai/langchain"
+    click cl href "https://github.com/Chainlit/chainlit"
+    click lc href "https://github.com/langchain-ai/langchain"
     click Ollama href "https://github.com/jmorganca/ollama"
-    click sqlite3 href "https://www.sqlite.org/index.html"
+    click cache1 href "https://www.sqlite.org/index.html"
+    click cache2 href "https://www.sqlite.org/index.html"
 ```
+
+>**Note:** The server cache stores previously asked questions between sessions whereas the chat cache stores answers between sessions.
 
 ### Filesystem
 
 ```text
 multi-mediawiki-rag
 ├── .chainlit
-│   ├── .langchain.db
-│   └── config.toml
+│   ├── .langchain.db # Server Cache
+│   └── config.toml # Server Config
 ├── .env
 ├── Dockerfile
+├── Modelfile
 ├── chainlit.md
 ├── config.yaml
-├── data
-│   ├── *
+├── data # VectorDB
+│   ├── 47e4e036-****-****-****-************
+│   │   └── *
 │   └── chroma.sqlite3
 ├── main.py
 ├── memory
-│   └── cache.db
+│   └── cache.db # Chat Cache
 ├── model
-│   └── sentence-transformers_all-MiniLM-L6-v2
+│   └── sentence-transformers_all-mpnet-base-v2
 │       └── *
 ├── requirements.txt
 └── sources
@@ -90,12 +96,20 @@ These instructions will get you a copy of the project up and running on your loc
 These steps assume you are using a modern Linux OS like Ubuntu with Python 3.
 
 1. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics`.
-2. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data, wiki name, and example prompt to test on the wiki.
-   1. You can choose to download your LLM during runtime from [Huggingface]("https://huggingface.co/") or locally before with [Ollama](https://github.com/jmorganca/ollama). (`ollama pull llama2`)
-3. Install python requirements:
+2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`.
+3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data and other configuration data.
+4. Install python requirements:
 
 ```bash
 pip install -r requirements.txt
+```
+
+### Create Custom LLM
+
+After installing Ollama we can use a [Modelfile](https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md) to download and tune an LLM to be more precise for Document Retrieval QA.
+
+```bash
+ollama create volo -f ./Modelfile
 ```
 
 ### Create Vector Database
@@ -110,23 +124,19 @@ python main.py
 
 #### Expected Output
 
-- Prompt: "What is a Tako?"
-
 ```text
-2023-12-15 22:09:21 - Loaded .env file
-2023-12-15 22:09:24 - Load pretrained SentenceTransformer: sentence-transformers/all-MiniLM-L6-v2
-2023-12-15 22:09:25 - Use pytorch device: cpu
-2023-12-15 22:13:49 - Anonymized telemetry enabled. See https://docs.trychroma.com/telemetry
-for more information.
-Batches: 100%|███████████████████████████████████████████████| 1303/1303 [10:28<00:00,  2.07it/s] 
-...
+2023-12-16 09:50:53 - Loaded .env file
+2023-12-16 09:50:55 - Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
+2023-12-16 09:51:18 - Use pytorch device: cpu
+2023-12-16 09:56:09 - Anonymized telemetry enabled. See 
+https://docs.trychroma.com/telemetry for more information.
 
 ```
 
 ### Start Chatbot
 
 ```bash
-chainlit run main.py -w
+chainlit run main.py -w -h
 ```
 
 Access the Chatbot GUI at `http://localhost:8000`.

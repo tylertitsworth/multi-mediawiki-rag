@@ -1,12 +1,11 @@
 **__pycache__**
 .env
-.devcontainer
 .git
 .github
 .gitignore
 .vscode
-data
 Dockerfile
 memory
 model
 sources
+*.md

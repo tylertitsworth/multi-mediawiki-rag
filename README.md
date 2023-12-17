@@ -142,10 +142,7 @@ python main.py
 2023-12-16 09:56:09 - Anonymized telemetry enabled. See 
 https://docs.trychroma.com/telemetry for more information.
 Batches: 100%|████████████████████████████████████████| 1303/1303 [1:23:14<00:00,  3.83s/it]
-Batches: 100%|████████████████████████████████████████| 1303/1303 [1:17:04<00:00,  3.55s/it]
-Batches: 100%|████████████████████████████████████████| 1303/1303 [1:12:07<00:00,  3.32s/it]
-Batches: 100%|████████████████████████████████████████| 1303/1303 [1:11:02<00:00,  3.27s/it]
-Batches: 100%|████████████████████████████████████████| 1303/1303 [1:08:30<00:00,  3.15s/it]
+...
 Batches: 100%|████████████████████████████████████████| 1172/1172 [1:04:08<00:00,  3.28s/it]
 023-12-16 19:47:01 - Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
 2023-12-16 19:47:33 - Use pytorch device: cpu
@@ -155,37 +152,7 @@ their territorial nature and combat skills, as well as having incredible camoufl
 that allowed them to blend into various environments. Takos lived in small tribes with a
 matriarchal society led by one or two female rulers. Their diet consisted mainly of crabs,
 lobsters, oysters, and shellfish, while their ink was highly sought after for use in calligraphy
-within Kara-Tur.['Tako () were a race of intelligent octopuses found in Kara-Tur.\n\nDescription\n
-Tako resembled regular octopuses but with larger proportions. They had thick, leathery skin that
-was red-orange in color for adult females and light green for the smaller adult males.  \nCombat\n
-Takos were territorial and would not hesitate to defend their territory. The males were tasked with
-the defense of their tribes territory. They were capable of wielding a different weapon with each
-tentacle, with their weapons of choice being small axes, spears and tridents. Additionally, they
-used their sharp, parrot-like beaks as weapons. Their tentacles were powerful enough to constrict
-an opponent.\n\nAbilities\nTakos had incredible natural camouflaging abilities. By altering the
-color of the skin and mantle, they blended seamlessly with their surroundings. Although they could
-expel a blue ink into the water, but it offered little defensive capability.', 'Society\nTakos lived
-in small tribes. Their society was matriarchal, each tribe ruled by one or a pair of females. The
-rest of the tribe usually consisted of up to a dozen males and a half dozen youths.\n\nTakos were
-believed to be the descendants of the batrachi.\nDiet\nAs carnivores, their diet usually consisted
-of crabs, lobsters, oysters and shellfish.\n\nHabitats\nTako tribes lived in large submarine caves in
-the coastal regions of Kara-Tur.\nLanguages\nTakos did not communicate verbally, instead their
-language was based on the movements of their tentacles and coloration changes in their skin. Only the
-most intelligent of humanoids were able to communicate with takos.\nRelationships\nOccasionally tako
-tribes would raid a coastal human village for food, treasure or weapons. Though some tribes
-co-existed peacefully with nearby humans.\nUsages\nThe ink produced by a tako was highly sought after
-in Kara-Tur, where it was used in calligraphy.\n\nAppendix\nAppearances\n\nReferences\n\n
-Category:Mollusks', "Tak might refer to:\n Tak, a doppelganger in the Moonsea.\n Tak, a goblin raider
-on the Sword Coast.\n Tak, a halfling member of the Dungsweepers' Guild of Waterdeep.", "Takako was a
-human ninja of Kara-Tur in the mid–14 century DR.\n\nHistory\nAs a teenager, Takako disguised herself
-as a man and a tutor took her on as a student in the skills of the ninja. Although Takako became an
-expert and agile warrior, she maintained her disguise as she worried no one would hire her for
-dangerous missions if they found out the truth.\n\nShe once fought with the warrior Masakito.This is
-inferred from the art used for both characters' cards being reused from the cover of Night of the
-Seven Swords.\n\nPersonality\nTakako was a thrill-seeker who enjoyed being in any kind of danger.\n\n
-Possessions\nTakako wielded a katana.\n\nAppendix\nNotes\n\nReferences\n\nCategory:Fighters\n
-Category:Ninja\nCategory:Humans\nCategory:Females\nCategory:Inhabitants of Kara-Tur\n
-Category:Inhabitants of Toril\nCategory:Inhabitants of lawful good alignment"]
+within Kara-Tur.
 ```
 
 ### Start Chatbot

@@ -30,7 +30,7 @@ title: Multi Mediawiki RAG
 
 ## About
 
-[Mediawikis](https://en.wikipedia.org/wiki/MediaWiki) hosted by [Fandom](https://www.fandom.com/) usually allow you to download an XML dump of the entire wiki as it currently exists. This project primarily leverages [lc](https://github.com/langchain-ai/langchain) with a few other open source projects to combine many of the readily available quickstart guides into a complete vertical application based on mediawiki data.
+[Mediawikis](https://en.wikipedia.org/wiki/MediaWiki) hosted by [Fandom](https://www.fandom.com/) usually allow you to download an XML dump of the entire wiki as it currently exists. This project primarily leverages [Langchain](https://github.com/langchain-ai/langchain) with a few other open source projects to combine many of the readily available quickstart guides into a complete vertical application based on mediawiki data.
 
 ### Architecture
 
@@ -42,12 +42,11 @@ graph TD;
     c[/xml dump c/] --MWDumpLoader--> ts
     ts{Text Splitter} --> emb{Embeddings} --> db
     db[(Chroma)] --Retriever--> lc
-    Ollama --Modelfile--> lc
+    modelfile[/Modelfile/] --Prompt\nRepeat Penalty\nTemperature\nTop K\nTop P--> Ollama
+    Ollama(((Ollama))) <-.Model.-> lc
     Memory <--Chat History--> lc
-    Prompt --DocumentQA--> lc
     lc{Langchain} <-.-> cl(((Chainlit)))
-    cache1[(Chat $)] <--sqlite3--> lc
-    cache2[(Server $)] <--sqlite3--> cl
+    cache1[(Chat $)] <--sqlite3--> Memory
     click db href "https://github.com/chroma-core/chroma"
     click Huggingface href "https://huggingface.co/"
     click cl href "https://github.com/Chainlit/chainlit"
@@ -56,8 +55,6 @@ graph TD;
     click cache1 href "https://www.sqlite.org/index.html"
     click cache2 href "https://www.sqlite.org/index.html"
 ```
-
->**Note:** The server cache stores previously asked questions between sessions whereas the chat cache stores answers between sessions.
 
 ### Filesystem
 

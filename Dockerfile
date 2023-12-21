@@ -14,7 +14,9 @@ WORKDIR $HOME/app
 
 COPY --chown=user . $HOME/app
 
-RUN ollama serve & sleep 5 && ollama create volo -f ./Modelfile
+RUN ollama serve & \
+    sleep 5 && \
+    ollama create volo -f ./Modelfile
 
 RUN python3 -m pip install --no-cache-dir -r requirements.txt
 

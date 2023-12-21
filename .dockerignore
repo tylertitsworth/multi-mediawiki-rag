@@ -6,6 +6,6 @@
 .vscode
 Dockerfile
 memory
-model
 sources
-*.md
+model/*/*
+!model/*/q4_0.bin

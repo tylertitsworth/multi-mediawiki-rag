@@ -1,0 +1,21 @@
+name: Test Runner Unit Tests
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install requirements
+      run: | 
+        python -m venv venv
+        source venv/bin/activate
+        venv/bin/python -m pip install pytest
+        venv/bin/python -m pip install -r requirements.txt
+    - name: Basic Unit Test
+      run: pytest test/test.py -W ignore::DeprecationWarning
+      env:
+        PYTHONPATH: test

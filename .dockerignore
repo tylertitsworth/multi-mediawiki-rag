@@ -3,9 +3,11 @@
 .git
 .github
 .gitignore
+.pytest_cache/
+.venv
 .vscode
 Dockerfile
 memory
-sources
 model/*/*
 !model/*/q4_0.bin
+sources

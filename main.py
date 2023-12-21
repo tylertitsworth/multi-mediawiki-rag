@@ -169,4 +169,5 @@ if __name__ == "__main__":
 
     res = chain(wiki.prompt)
     answer = res["answer"]
+    print(answer)
     print([source_doc.page_content for source_doc in res["source_documents"]])

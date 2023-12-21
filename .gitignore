@@ -1,5 +1,6 @@
 .chainlit
 .env
+.venv
 .vscode/
 **__pycache__**
 chainlit.md

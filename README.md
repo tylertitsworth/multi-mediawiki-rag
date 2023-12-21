@@ -159,3 +159,15 @@ chainlit run main.py -w -h
 ```
 
 Access the Chatbot GUI at `http://localhost:8000`.
+
+### Unit Testing
+
+```bash
+pip install pytest
+# Basic Testing
+PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning
+# With Embedding
+PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning --embed
+# With Ollama Model Backend
+PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning --ollama
+```

@@ -5,7 +5,6 @@ colorTo: gray
 license: mit
 pinned: true
 sdk: docker
-startup_duration_timeout: 6h
 title: Multi Mediawiki RAG
 ---
 --->
@@ -76,6 +75,9 @@ multi-mediawiki-rag
 ├── memory
 │   └── cache.db # Chat Cache
 ├── model
+│   ├── <modelname>
+│   │   ├── q4_0.bin
+│   │   └── *
 │   └── sentence-transformers_all-mpnet-base-v2
 │       └── *
 ├── requirements.txt
@@ -104,13 +106,22 @@ These instructions will get you a copy of the project up and running on your loc
 These steps assume you are using a modern Linux OS like Ubuntu with Python 3.
 
 1. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics`.
-2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`.
-3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data and other configuration data.
-4. Install python requirements:
+2. (Optional)
+   1. Install [Git LFS](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage?platform=linux)
+   2. download your model of choice from [Huggingface](https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard) with `git clone https://huggingface.co/<org>/<modelname> model/<modelname>`.
+   3. Modify [Modelfile](Modelfile) to point to the same directory as your modelname of choice.
+3. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`.
+4. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration data.
+5. Edit [`Modelfile`](Modelfile) with the location of the model you downloaded in step 2.
+6. Create a directory to store chat history with `mkdir memory`.
+7. Install python requirements:
 
 ```bash
+pip install -U pip setuptools wheel
 pip install -r requirements.txt
 ```
+
+>**Note:** To properly install Chroma, you might need to install a newer version of [sqlite3](https://www.sqlite.org/download.html).
 
 ### Create Custom LLM
 
@@ -118,7 +129,11 @@ After installing Ollama we can use a [Modelfile](https://github.com/jmorganca/ol
 
 ```bash
 ollama create volo -f ./Modelfile
+# Test the model
+ollama run volo "Hello World"
 ```
+
+>**Note:** If your model of choice is not in `GGUF` format, you can convert it with docker via `docker run --rm -v $PWD/model/<modelname>:/model ollama/quantize -q q4_0 /model`.
 
 ### Create Vector Database
 
@@ -159,3 +174,15 @@ chainlit run main.py -w -h
 ```
 
 Access the Chatbot GUI at `http://localhost:8000`.
+
+### Unit Testing
+
+```bash
+pip install pytest
+# Basic Testing
+PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning
+# With Embedding
+PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning --embed
+# With Ollama Model Backend
+PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning --ollama
+```

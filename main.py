@@ -24,8 +24,10 @@ class MultiWiki:
                 data = yaml.safe_load(file)
         except FileNotFoundError:
             print("Error: File config.yaml not found.")
+            exit(1)
         except yaml.YAMLError as e:
             print(f"Error reading YAML file: {e}")
+            exit(1)
         
         for key, val in data.items():
             if key == 'mediawikis':
@@ -169,4 +171,5 @@ if __name__ == "__main__":
 
     res = chain(wiki.prompt)
     answer = res["answer"]
+    print(answer)
     print([source_doc.page_content for source_doc in res["source_documents"]])

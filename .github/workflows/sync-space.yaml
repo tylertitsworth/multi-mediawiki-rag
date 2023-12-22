@@ -1,0 +1,31 @@
+name: Sync Space
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Login with Huggingface CLI
+      run: |
+        pip install -U "huggingface_hub[cli]"
+        git config --global credential.helper store
+        huggingface-cli login --token ${{ secrets.HF_TOKEN }} --add-to-git-credential
+    - name: Add Remote
+      run: |
+        git remote add hf https://huggingface.co/spaces/TotalSundae/dungeons-and-dragons
+        git fetch hf
+    - name: Add remote-specific files
+      run: |
+        git checkout hf/main data/
+        git checkout hf/main sources/
+        git checkout hf/main README.md
+    - name: Push Updates to Remote
+      run: |
+        git config --global user.email "${{ github.event.pusher.email }}"
+        git config --global user.name "${{ github.event.pusher.name }}"
+        git commit -m 'sync space'
+        git push hf main

@@ -1,0 +1,30 @@
+name: Sync Space
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Login with Huggingface CLI
+      run: |
+        pip install -U "huggingface_hub[cli]" hf-transfer
+        git config --global credential.helper store
+        huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+    - name: Upload Files
+      env:
+        HF_HUB_ENABLE_HF_TRANSFER: 1
+      run: |
+        files=$(git diff --name-only HEAD HEAD~1)
+        upload_files() {
+          local file=$1
+          huggingface-cli upload --repo-type space TotalSundae/dungeons-and-dragons $file $file
+        }
+        for file in $files; do
+          upload_files $file
+        done

@@ -1,4 +1,3 @@
-<!--- huggingface spaces metadata
 ---
 colorFrom: red
 colorTo: gray
@@ -7,7 +6,6 @@ pinned: true
 sdk: docker
 title: Multi Mediawiki RAG
 ---
---->
 # Multi Mediawiki RAG Chatbot
 
 [Chatbots](https://www.forbes.com/advisor/business/software/what-is-a-chatbot/) are very popular right now. Most openly accessible information is stored in some kind of a [Mediawiki](https://en.wikipedia.org/wiki/MediaWiki). Creating a [RAG](https://research.ibm.com/blog/retrieval-augmented-generation-RAG) Chatbot is becoming a very powerful alternative to traditional data gathering. This project is designed to create a basic format for creating your own chatbot to run locally on linux.

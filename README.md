@@ -1,6 +1,4 @@
 ---
-colorFrom: red
-colorTo: gray
 license: mit
 pinned: true
 sdk: docker
@@ -21,9 +19,11 @@ title: Multi Mediawiki RAG
   - [Quickstart](#quickstart)
     - [Prerequisites](#prerequisites)
     - [Create Custom LLM](#create-custom-llm)
+      - [Use Model from Huggingface](#use-model-from-huggingface)
     - [Create Vector Database](#create-vector-database)
       - [Expected Output](#expected-output)
     - [Start Chatbot](#start-chatbot)
+    - [Unit Testing](#unit-testing)
 
 ## About
 
@@ -33,24 +33,21 @@ title: Multi Mediawiki RAG
 
 ```mermaid
 graph TD;
-    Huggingface --Sentence Transformer --> emb
     a[/xml dump a/] --MWDumpLoader--> ts
     b[/xml dump b/] --MWDumpLoader--> ts
-    c[/xml dump c/] --MWDumpLoader--> ts
-    ts{Text Splitter} --> emb{Embeddings} --> db
-    db[(Chroma)] --Retriever--> lc
-    modelfile[/Modelfile/] --Prompt\nRepeat Penalty\nTemperature\nTop K\nTop P--> Ollama
-    Ollama(((Ollama))) <-.Model.-> lc
-    Memory <--Chat History--> lc
+    ts{Text Splitting} --> emb{Embedding} --> db
+    db[(Chroma)] --Document Retriever--> lc
+    hf(Huggingface) --Sentence Transformer --> emb
+    hf --LLM--> modelfile
+    modelfile[/Modelfile/] --> Ollama
+    Ollama(((Ollama))) <-.Model Backend.-> lc
+    Mem[(Memory)] <--Chat History--> lc
     lc{Langchain} <-.-> cl(((Chainlit)))
-    cache1[(Chat $)] <--sqlite3--> Memory
     click db href "https://github.com/chroma-core/chroma"
-    click Huggingface href "https://huggingface.co/"
+    click hf href "https://huggingface.co/"
     click cl href "https://github.com/Chainlit/chainlit"
     click lc href "https://github.com/langchain-ai/langchain"
     click Ollama href "https://github.com/jmorganca/ollama"
-    click cache1 href "https://www.sqlite.org/index.html"
-    click cache2 href "https://www.sqlite.org/index.html"
 ```
 
 ### Filesystem
@@ -101,25 +98,21 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-These steps assume you are using a modern Linux OS like Ubuntu with Python 3.
+These steps assume you are using a modern Linux OS like Ubuntu with Python 3.10+.
 
-1. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics`.
-2. (Optional)
-   1. Install [Git LFS](https://docs.github.com/en/repositories/working-with-files/managing-large-files/installing-git-large-file-storage?platform=linux)
-   2. download your model of choice from [Huggingface](https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard) with `git clone https://huggingface.co/<org>/<modelname> model/<modelname>`.
-   3. Modify [Modelfile](Modelfile) to point to the same directory as your modelname of choice.
-3. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`.
-4. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration data.
-5. Edit [`Modelfile`](Modelfile) with the location of the model you downloaded in step 2.
-6. Create a directory to store chat history with `mkdir memory`.
-7. Install python requirements:
+1. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics` or using a tool like [wikiteam3](https://pypi.org/project/wikiteam3/).
+    1. Download current pages, not the entire history.
+    2. Provide in the following format: `sources/<wikiname>_pages_current.xml`
+2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`.
+3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration data.
+4. Edit [`Modelfile`](Modelfile) with the location of the model you downloaded in step 2.
+5. Create a directory to store chat history with `mkdir memory`.
+6. Install python requirements:
 
 ```bash
 pip install -U pip setuptools wheel
 pip install -r requirements.txt
 ```
-
->**Note:** To properly install Chroma, you might need to install a newer version of [sqlite3](https://www.sqlite.org/download.html).
 
 ### Create Custom LLM
 
@@ -127,11 +120,13 @@ After installing Ollama we can use a [Modelfile](https://github.com/jmorganca/ol
 
 ```bash
 ollama create volo -f ./Modelfile
-# Test the model
-ollama run volo "Hello World"
 ```
 
->**Note:** If your model of choice is not in `GGUF` format, you can convert it with docker via `docker run --rm -v $PWD/model/<modelname>:/model ollama/quantize -q q4_0 /model`.
+#### Use Model from Huggingface
+
+1. Download a model of choice from [Huggingface](https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard) with `git clone https://huggingface.co/<org>/<modelname> model/<modelname>`.
+2. If your model of choice is not in `GGUF` or `GGML` format, convert it with `docker run --rm -v $PWD/model/<modelname>:/model ollama/quantize -q q4_0 /model`.
+2. Modify the [Modelfile's](Modelfile) `FROM` line to contain the path to the `q4_0.bin` file in the modelname directory.
 
 ### Create Vector Database
 

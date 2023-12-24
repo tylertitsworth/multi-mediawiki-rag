@@ -36,7 +36,7 @@ def test_create_vector_db():
 
 @pytest.mark.ollama
 def test_create_chain():
-    chain = create_chain("sentence-transformers/all-mpnet-base-v2", "volo")
+    chain, llm = create_chain("sentence-transformers/all-mpnet-base-v2", "volo")
     res = chain("What is a Tako?")
     assert res["answer"] != ""
     assert res["source_documents"] != []

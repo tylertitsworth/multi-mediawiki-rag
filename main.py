@@ -42,21 +42,23 @@ class MultiWiki:
     def set_args(self, args):
         self.args = args
 
+    # https://github.com/jmorganca/ollama/blob/main/docs/api.md#show-model-information
+    def set_chat_settings(self, settings):
+        if not settings:
+            self.inputs = dict(
+                pair.split()
+                for pair in requests.post(
+                    "http://localhost:11434/api/show", data=f'{{"name": "{self.model}"}}', timeout=5
+                )
+                .json()["parameters"]
+                .split("\n")
+                if pair.strip()
+            )
+        else:
+            self.inputs = settings
 
 ### Globals
-
 wiki = MultiWiki()
-# https://github.com/jmorganca/ollama/blob/main/docs/api.md#show-model-information
-defaults = dict(
-    pair.split()
-    for pair in requests.post(
-        "http://localhost:11434/api/show", data=f'{{"name": "{wiki.model}"}}', timeout=5
-    )
-    .json()["parameters"]
-    .split("\n")
-    if pair.strip()
-)
-
 
 def create_vector_db(embeddings_model, source, wikis):
     if not source:
@@ -110,16 +112,16 @@ def create_chain(embeddings_model, model):
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     # https://python.langchain.com/docs/integrations/llms/llm_caching
     set_llm_cache(SQLiteCache(database_path="memory/cache.db"))
+    wiki.set_chat_settings(None)
     # https://python.langchain.com/docs/integrations/llms/ollama
-    global defaults
     model = ChatOllama(
         cache=True,
         callback_manager=callback_manager,
         model=model,
-        repeat_penalty=defaults["repeat_penalty"],
-        temperature=defaults["temperature"],
-        top_k=defaults["top_k"],
-        top_p=defaults["top_p"],
+        repeat_penalty=wiki.inputs["repeat_penalty"],
+        temperature=wiki.inputs["temperature"],
+        top_k=wiki.inputs["top_k"],
+        top_p=wiki.inputs["top_p"],
     )
     # https://api.python.langchain.com/en/latest/chains/langchain.chains.conversational_retrieval.base.ConversationalRetrievalChain.html
     chain = ConversationalRetrievalChain.from_llm(
@@ -137,13 +139,12 @@ def create_chain(embeddings_model, model):
 # https://docs.chainlit.io/examples/qa
 @cl.on_chat_start
 async def on_chat_start():
-    global defaults, wiki
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [
         Slider(
             id="temperature",
             label="Temperature",
-            initial=defaults["temperature"],
+            initial=wiki.inputs["temperature"],
             min=0,
             max=1,
             step=0.1,
@@ -152,7 +153,7 @@ async def on_chat_start():
         Slider(
             id="repeat_penalty",
             label="Repeat Penalty",
-            initial=defaults["repeat_penalty"],
+            initial=wiki.inputs["repeat_penalty"],
             min=0.5,
             max=2.5,
             step=0.1,
@@ -161,7 +162,7 @@ async def on_chat_start():
         Slider(
             id="top_k",
             label="Top K",
-            initial=defaults["top_k"],
+            initial=wiki.inputs["top_k"],
             min=0,
             max=100,
             step=1,
@@ -170,7 +171,7 @@ async def on_chat_start():
         Slider(
             id="top_p",
             label="Top P",
-            initial=defaults["top_p"],
+            initial=wiki.inputs["top_p"],
             min=0,
             max=1,
             step=0.1,
@@ -232,8 +233,7 @@ async def on_message(message: cl.Message):
 
 @cl.on_settings_update
 async def setup_agent(settings):
-    global defaults
-    defaults = settings
+    wiki.set_chat_settings(settings)
     await on_chat_start()
 
 

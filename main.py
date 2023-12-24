@@ -48,7 +48,9 @@ class MultiWiki:
             self.inputs = dict(
                 pair.split()
                 for pair in requests.post(
-                    "http://localhost:11434/api/show", data=f'{{"name": "{self.model}"}}', timeout=5
+                    "http://localhost:11434/api/show",
+                    data=f'{{"name": "{self.model}"}}',
+                    timeout=5,
                 )
                 .json()["parameters"]
                 .split("\n")
@@ -57,8 +59,10 @@ class MultiWiki:
         else:
             self.inputs = settings
 
+
 ### Globals
 wiki = MultiWiki()
+
 
 def create_vector_db(embeddings_model, source, wikis):
     if not source:
@@ -139,6 +143,11 @@ def create_chain(embeddings_model, model):
 # https://docs.chainlit.io/examples/qa
 @cl.on_chat_start
 async def on_chat_start():
+    chain, llm = create_chain(
+        wiki.embeddings_model,
+        wiki.model,
+    )
+
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [
         Slider(
@@ -179,10 +188,6 @@ async def on_chat_start():
         ),
     ]
 
-    chain, llm = create_chain(
-        wiki.embeddings_model,
-        wiki.model,
-    )
     # https://docs.chainlit.io/observability-iteration/prompt-playground/llm-providers#langchain-provider
     add_llm_provider(
         LangchainGenericProvider(

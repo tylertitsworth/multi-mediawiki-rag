@@ -39,10 +39,10 @@ graph TD;
     db[(Chroma)] --Document Retriever--> lc
     hf(Huggingface) --Sentence Transformer --> emb
     hf --LLM--> modelfile
-    modelfile[/Modelfile/] --> Ollama
-    Ollama(((Ollama))) <-.Model Backend.-> lc
+    modelfile[/Modelfile/] --Prompt\nParameters--> Ollama
+    Ollama(((Ollama))) <-.ChatOllama.-> lc
     Mem[(Memory)] <--Chat History--> lc
-    lc{Langchain} <-.-> cl(((Chainlit)))
+    lc{Langchain} <-.LLMChain.-> cl(((Chainlit)))
     click db href "https://github.com/chroma-core/chroma"
     click hf href "https://huggingface.co/"
     click cl href "https://github.com/Chainlit/chainlit"

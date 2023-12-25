@@ -22,6 +22,7 @@ title: Multi Mediawiki RAG
       - [Use Model from Huggingface](#use-model-from-huggingface)
     - [Create Vector Database](#create-vector-database)
       - [Expected Output](#expected-output)
+      - [Add Different Data to DB](#add-different-data-to-db)
     - [Start Chatbot](#start-chatbot)
     - [Unit Testing](#unit-testing)
 
@@ -104,9 +105,9 @@ These steps assume you are using a modern Linux OS like Ubuntu with Python 3.10+
     1. Download current pages, not the entire history.
     2. Provide in the following format: `sources/<wikiname>_pages_current.xml`
 2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`.
-3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration data.
-5. Create a directory to store chat history with `mkdir memory`.
-6. Install python requirements:
+3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration data.
+4. Create a directory to store chat history with `mkdir memory`.
+5. Install python requirements:
 
 ```bash
 pip install -U pip setuptools wheel
@@ -158,6 +159,36 @@ matriarchal society led by one or two female rulers. Their diet consisted mainly
 lobsters, oysters, and shellfish, while their ink was highly sought after for use in calligraphy
 within Kara-Tur.
 ```
+
+#### Add Different Data to DB
+
+Choose a new [Filetype Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
+
+```python
+    for wiki in wikis.keys():
+        wikis[wiki] = MWDumpLoader(
+            encoding="utf-8",
+            file_path=f"{source}/{wiki}_pages_current.xml",
+            namespaces=[0],
+            skip_redirects=True,
+            stop_on_error=False,
+        )
+    ### Create a new Loader object and insert into dict
+    new_loader = TextLoader("<path/to/new/data>.md")
+    wikis.append("<source title>": new_loader)
+    ###
+    loader_all = MergedDataLoader(loaders=wikis.values())
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
+    documents = text_splitter.split_documents(loader_all.load())
+    vectordb = Chroma.from_documents(
+        documents=documents,
+        embedding=embeddings,
+        persist_directory="data",
+    )
+    vectordb.persist()
+```
+
+Re-embed to include the new data for retrieval.
 
 ### Start Chatbot
 

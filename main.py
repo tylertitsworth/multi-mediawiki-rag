@@ -59,10 +59,8 @@ class MultiWiki:
         else:
             self.inputs = settings
 
-
 ### Globals
 wiki = MultiWiki()
-
 
 def create_vector_db(embeddings_model, source, wikis):
     if not source:

@@ -104,8 +104,7 @@ These steps assume you are using a modern Linux OS like Ubuntu with Python 3.10+
     1. Download current pages, not the entire history.
     2. Provide in the following format: `sources/<wikiname>_pages_current.xml`
 2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`.
-3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration data.
-4. Edit [`Modelfile`](Modelfile) with the location of the model you downloaded in step 2.
+3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration data.
 5. Create a directory to store chat history with `mkdir memory`.
 6. Install python requirements:
 
@@ -125,7 +124,7 @@ ollama create volo -f ./Modelfile
 #### Use Model from Huggingface
 
 1. Download a model of choice from [Huggingface](https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard) with `git clone https://huggingface.co/<org>/<modelname> model/<modelname>`.
-2. If your model of choice is not in `GGUF` or `GGML` format, convert it with `docker run --rm -v $PWD/model/<modelname>:/model ollama/quantize -q q4_0 /model`.
+2. If your model of choice is not in `GGUF` format, convert it with `docker run --rm -v $PWD/model/<modelname>:/model ollama/quantize -q q4_0 /model`.
 2. Modify the [Modelfile's](Modelfile) `FROM` line to contain the path to the `q4_0.bin` file in the modelname directory.
 
 ### Create Vector Database

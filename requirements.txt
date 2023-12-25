@@ -4,7 +4,7 @@ git+https://github.com/mediawiki-utilities/python-mwtypes@updates_schema_0.11
 chainlit==0.7.700
 chromadb==0.4.20
 httptools==0.6.1
-langchain==0.0.351
+langchain==0.0.352
 mwparserfromhell==0.6.5
 sentence-transformers==2.2.2
 tiktoken==0.5.2

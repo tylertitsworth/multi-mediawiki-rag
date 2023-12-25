@@ -59,10 +59,8 @@ class MultiWiki:
         else:
             self.inputs = settings
 
-
 ### Globals
 wiki = MultiWiki()
-
 
 def create_vector_db(embeddings_model, source, wikis):
     if not source:
@@ -79,6 +77,8 @@ def create_vector_db(embeddings_model, source, wikis):
         wikis[wiki] = MWDumpLoader(
             encoding="utf-8",
             file_path=f"{source}/{wiki}_pages_current.xml",
+            # https://www.mediawiki.org/wiki/Help:Namespaces
+            namespaces=[0],
             skip_redirects=True,
             stop_on_error=False,
         )

@@ -8,13 +8,12 @@ def test_multiwiki():
     wiki = MultiWiki()
     assert wiki.embeddings_model == "sentence-transformers/all-mpnet-base-v2"
     assert wiki.model == "volo"
-    assert wiki.prompt == "What is a Tako?"
+    assert wiki.prompt["human"] == "Question: ```{question}```"
+    assert wiki.prompt["question"] == "What is a Tako?"
     assert wiki.source == "./sources"
     assert wiki.wikis == {
         "dnd5e": "",
-        "eberron": "",
         "forgottenrealms": "",
-        "planescape": "",
     }
 
 
@@ -36,7 +35,13 @@ def test_create_vector_db():
 
 @pytest.mark.ollama
 def test_create_chain():
-    chain, llm = create_chain("sentence-transformers/all-mpnet-base-v2", "volo")
-    res = chain("What is a Tako?")
+    wiki = MultiWiki()
+    chain, llm = create_chain(
+        wiki.embeddings_model,
+        wiki.model,
+        wiki.prompt["system"],
+        wiki.prompt["human"]
+    )
+    res = chain(wiki.prompt["question"])
     assert res["answer"] != ""
     assert res["source_documents"] != []

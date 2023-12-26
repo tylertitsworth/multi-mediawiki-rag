@@ -1,4 +1,3 @@
-from sys import exit
 from chainlit.input_widget import Slider
 from chainlit.playground.config import add_llm_provider
 from chainlit.playground.providers.langchain import LangchainGenericProvider
@@ -12,8 +11,10 @@ from langchain.document_loaders.merge import MergedDataLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
+from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate, SystemMessagePromptTemplate
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
+from sys import exit
 
 import argparse
 import chainlit as cl
@@ -45,17 +46,7 @@ class MultiWiki:
     # https://github.com/jmorganca/ollama/blob/main/docs/api.md#show-model-information
     def set_chat_settings(self, settings):
         if not settings:
-            self.inputs = dict(
-                pair.split()
-                for pair in requests.post(
-                    "http://localhost:11434/api/show",
-                    data=f'{{"name": "{self.model}"}}',
-                    timeout=5,
-                )
-                .json()["parameters"]
-                .split("\n")
-                if pair.strip()
-            )
+            self.inputs = wiki.settings
         else:
             self.inputs = settings
 
@@ -97,7 +88,14 @@ def create_vector_db(embeddings_model, source, wikis):
     vectordb.persist()
 
 
-def create_chain(embeddings_model, model):
+def create_chain(embeddings_model, model, system, human):
+    # https://python.langchain.com/docs/modules/model_io/prompts/prompt_templates/
+    prompt = ChatPromptTemplate.from_messages(
+        messages=[
+            SystemMessagePromptTemplate.from_template(system),
+            HumanMessagePromptTemplate.from_template(human)
+        ]
+    )
     # https://python.langchain.com/docs/modules/memory/chat_messages/
     message_history = ChatMessageHistory()
     # https://python.langchain.com/docs/modules/memory/
@@ -122,6 +120,7 @@ def create_chain(embeddings_model, model):
         cache=True,
         callback_manager=callback_manager,
         model=model,
+        template=prompt,
         repeat_penalty=wiki.inputs["repeat_penalty"],
         temperature=wiki.inputs["temperature"],
         top_k=wiki.inputs["top_k"],
@@ -146,6 +145,8 @@ async def on_chat_start():
     chain, llm = create_chain(
         wiki.embeddings_model,
         wiki.model,
+        wiki.prompt["system"],
+        wiki.prompt["human"]
     )
 
     # https://docs.chainlit.io/api-reference/chat-settings
@@ -258,13 +259,15 @@ if __name__ == "__main__":
     chain, llm = create_chain(
         wiki.embeddings_model,
         wiki.model,
+        wiki.prompt["system"],
+        wiki.prompt["human"]
     )
 
-    if not wiki.prompt:
+    if not wiki.prompt["question"]:
         print("No Prompt for Chatbot found")
         exit(1)
 
-    res = chain(wiki.prompt)
+    res = chain(wiki.prompt["question"])
     answer = res["answer"]
     print(answer)
     print([source_doc.page_content for source_doc in res["source_documents"]])

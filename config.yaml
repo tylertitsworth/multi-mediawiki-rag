@@ -1,12 +1,34 @@
 # Huggingface
 embeddings_model: sentence-transformers/all-mpnet-base-v2
 # Ollama
-model: volo
+model: neural-chat
 
 mediawikis:
+  # - dnd4e
   - dnd5e
-  - eberron
+  # - dragonlance
+  # - eberron
+  # - greyhawk
   - forgottenrealms
-  - planescape
-prompt: "What is a Tako?"
+  # - planescape
+  # - ravenloft
+  # - spelljammer
+
+prompt: 
+  human: "Question: ```{question}```"
+  system: |
+    Given the following extracted parts of a long document and a question, create a final answer with references ("SOURCES"). 
+    If you don't know the answer, just say that you don't know. Don't try to make up an answer.
+    ALWAYS return a "SOURCES" part in your answer.
+    ----
+    Content: {context}
+    ---
+  question: "What is a Tako?"
+
+settings:
+  repeat_penalty: 1.3
+  temperature: 0.4
+  top_k: 20
+  top_p: 0.35
+
 source: ./sources

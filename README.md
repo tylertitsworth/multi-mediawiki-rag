@@ -15,7 +15,6 @@ title: Multi Mediawiki RAG
   - [About](#about)
     - [Architecture](#architecture)
     - [Filesystem](#filesystem)
-    - [System Prompt](#system-prompt)
   - [Quickstart](#quickstart)
     - [Prerequisites](#prerequisites)
     - [Create Custom LLM](#create-custom-llm)
@@ -34,13 +33,13 @@ title: Multi Mediawiki RAG
 
 ```mermaid
 graph TD;
-    a[/xml dump a/] --MWDumpLoader--> ts
-    b[/xml dump b/] --MWDumpLoader--> ts
-    ts{Text Splitting} --> emb{Embedding} --> db
+    a[/xml dump a/] --MWDumpLoader--> emb
+    b[/xml dump b/] --MWDumpLoader--> emb
+    emb{Embedding} --> db
     db[(Chroma)] --Document Retriever--> lc
     hf(Huggingface) --Sentence Transformer --> emb
     hf --LLM--> modelfile
-    modelfile[/Modelfile/] --Prompt\nParameters--> Ollama
+    modelfile[/Modelfile/] --> Ollama
     Ollama(((Ollama))) <-.ChatOllama.-> lc
     Mem[(Memory)] <--Chat History--> lc
     lc{Langchain} <-.LLMChain.-> cl(((Chainlit)))
@@ -80,17 +79,6 @@ multi-mediawiki-rag
 └── sources
     ├── <wikiname>_pages_current.xml
     └── *
-```
-
-### System Prompt
-
-```text
-Given the following extracted parts of a long document and a question, create a final answer with references ("SOURCES"). 
-If you don't know the answer, just say that you don't know. Don't try to make up an answer.
-ALWAYS return a "SOURCES" part in your answer.
----
-Content: {context}
----
 ```
 
 ## Quickstart
@@ -173,19 +161,11 @@ Choose a new [Filetype Document Loader](https://python.langchain.com/docs/module
             skip_redirects=True,
             stop_on_error=False,
         )
-    ### Create a new Loader object and insert into dict
-    new_loader = TextLoader("<path/to/new/data>.md")
-    wikis.append("<source title>": new_loader)
+    ### Insert a new loader
+    from langchain.document_loaders import TextLoader
+    wikis.append({"mydocument": TextLoader("./mydocument.md")})
     ###
     loader_all = MergedDataLoader(loaders=wikis.values())
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-    documents = text_splitter.split_documents(loader_all.load())
-    vectordb = Chroma.from_documents(
-        documents=documents,
-        embedding=embeddings,
-        persist_directory="data",
-    )
-    vectordb.persist()
 ```
 
 Re-embed to include the new data for retrieval.
@@ -203,9 +183,9 @@ Access the Chatbot GUI at `http://localhost:8000`.
 ```bash
 pip install pytest
 # Basic Testing
-PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning
+pytest test/test.py -W ignore::DeprecationWarning
 # With Embedding
-PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning --embed
+pytest test/test.py -W ignore::DeprecationWarning --embed
 # With Ollama Model Backend
-PYTHONPATH=test pytest test/test.py -W ignore::DeprecationWarning --ollama
+pytest test/test.py -W ignore::DeprecationWarning --ollama
 ```

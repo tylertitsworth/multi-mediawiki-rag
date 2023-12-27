@@ -1,4 +1,3 @@
-from sys import exit
 from chainlit.input_widget import Slider
 from chainlit.playground.config import add_llm_provider
 from chainlit.playground.providers.langchain import LangchainGenericProvider
@@ -12,12 +11,11 @@ from langchain.document_loaders.merge import MergedDataLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.vectorstores import Chroma
+from sys import exit
 
 import argparse
 import chainlit as cl
-import requests
 import yaml
 
 
@@ -45,22 +43,14 @@ class MultiWiki:
     # https://github.com/jmorganca/ollama/blob/main/docs/api.md#show-model-information
     def set_chat_settings(self, settings):
         if not settings:
-            self.inputs = dict(
-                pair.split()
-                for pair in requests.post(
-                    "http://localhost:11434/api/show",
-                    data=f'{{"name": "{self.model}"}}',
-                    timeout=5,
-                )
-                .json()["parameters"]
-                .split("\n")
-                if pair.strip()
-            )
+            self.inputs = wiki.settings
         else:
             self.inputs = settings
 
+
 ### Globals
 wiki = MultiWiki()
+
 
 def create_vector_db(embeddings_model, source, wikis):
     if not source:
@@ -84,15 +74,13 @@ def create_vector_db(embeddings_model, source, wikis):
         )
     # https://python.langchain.com/docs/integrations/document_loaders/merge_doc
     loader_all = MergedDataLoader(loaders=wikis.values())
-    # https://python.langchain.com/docs/modules/data_connection/document_transformers/#get-started-with-text-splitters
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-    documents = text_splitter.split_documents(loader_all.load())
+    documents = loader_all.load()
+    print(f"Embedding {len(documents)} Pages, this may take a while.")
     # https://python.langchain.com/docs/integrations/vectorstores/chroma
     vectordb = Chroma.from_documents(
         documents=documents,
         embedding=embeddings,
         persist_directory="data",
-        # ids=[str(i) for i in range(len(loader_all.load()))],
     )
     vectordb.persist()
 
@@ -197,7 +185,7 @@ async def on_chat_start():
             is_chat=True,
             # Not enough context to LangchainGenericProvider
             # https://github.com/Chainlit/chainlit/blob/main/backend/chainlit/playground/providers/langchain.py#L27
-            # inputs=inputs
+            # inputs=inputs,
         )
     )
     await cl.ChatSettings(inputs).send()
@@ -260,11 +248,11 @@ if __name__ == "__main__":
         wiki.model,
     )
 
-    if not wiki.prompt:
+    if not wiki.question:
         print("No Prompt for Chatbot found")
         exit(1)
 
-    res = chain(wiki.prompt)
+    res = chain(wiki.question)
     answer = res["answer"]
     print(answer)
     print([source_doc.page_content for source_doc in res["source_documents"]])

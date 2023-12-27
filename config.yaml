@@ -1,12 +1,25 @@
 # Huggingface
 embeddings_model: sentence-transformers/all-mpnet-base-v2
-# Ollama
-model: volo
-
+# Sources
 mediawikis:
+  - dnd4e
   - dnd5e
+  - darksun
+  - dragonlance
   - eberron
+  - exandria
+  - greyhawk
   - forgottenrealms
   - planescape
-prompt: "What is a Tako?"
+  - ravenloft
+  - spelljammer
+# Ollama
+model: volo
+question: What is a Tako?
+settings:
+  repeat_penalty: 1.3
+  temperature: 0.4
+  top_k: 20
+  top_p: 0.35
+# Sources Path
 source: ./sources

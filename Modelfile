@@ -1,1 +1,13 @@
-FROM ./model/neural-chat-7b-v3-3-Slerp/q4_0.bin
+FROM neural-chat
+# FROM ./model/neural-chat-7b-v3-3-Slerp/q4_0.bin
+
+TEMPLATE """{{- if .First }}
+### System:
+{{ .System }}
+{{- end }}
+
+### User:
+{{ .Prompt }}
+
+### Assistant:
+"""

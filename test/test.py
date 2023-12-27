@@ -8,12 +8,20 @@ def test_multiwiki():
     wiki = MultiWiki()
     assert wiki.embeddings_model == "sentence-transformers/all-mpnet-base-v2"
     assert wiki.model == "volo"
-    assert wiki.prompt["human"] == "Question: ```{question}```"
-    assert wiki.prompt["question"] == "What is a Tako?"
+    assert wiki.question == "What is a Tako?"
     assert wiki.source == "./sources"
     assert wiki.wikis == {
+        "dnd4e": "",
         "dnd5e": "",
+        "darksun": "",
+        "dragonlance": "",
+        "eberron": "",
+        "exandria": "",
+        "greyhawk": "",
         "forgottenrealms": "",
+        "planescape": "",
+        "ravenloft": "",
+        "spelljammer": "",
     }
 
 
@@ -29,19 +37,16 @@ def test_multiwiki_set_args():
 @pytest.mark.embed
 def test_create_vector_db():
     create_vector_db(
-        "sentence-transformers/all-mpnet-base-v2", "./sources", {"forgottenrealms": ""}
+        "sentence-transformers/all-mpnet-base-v2",
+        "./sources",
+        {"dnd5e": ""}
     )
 
 
 @pytest.mark.ollama
 def test_create_chain():
     wiki = MultiWiki()
-    chain, llm = create_chain(
-        wiki.embeddings_model,
-        wiki.model,
-        wiki.prompt["system"],
-        wiki.prompt["human"]
-    )
-    res = chain(wiki.prompt["question"])
+    chain, llm = create_chain(wiki.embeddings_model, wiki.model)
+    res = chain(wiki.question)
     assert res["answer"] != ""
     assert res["source_documents"] != []

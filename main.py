@@ -1,6 +1,5 @@
 from chainlit.input_widget import Slider
 from chainlit.playground.config import add_llm_provider
-from provider import LangchainGenericProvider
 from langchain.cache import SQLiteCache
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -12,6 +11,7 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 from langchain.vectorstores import Chroma
+from provider import LangchainGenericProvider
 from sys import exit
 
 import argparse

@@ -1,6 +1,6 @@
 from chainlit.input_widget import Slider
 from chainlit.playground.config import add_llm_provider
-from chainlit.playground.providers.langchain import LangchainGenericProvider
+from provider import LangchainGenericProvider
 from langchain.cache import SQLiteCache
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -135,6 +135,7 @@ async def on_chat_start():
         wiki.embeddings_model,
         wiki.model,
     )
+    wiki.set_chat_settings(None)
 
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [
@@ -175,7 +176,7 @@ async def on_chat_start():
             description="Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)",
         ),
     ]
-
+    wiki.set_chat_settings(inputs)
     # https://docs.chainlit.io/observability-iteration/prompt-playground/llm-providers#langchain-provider
     add_llm_provider(
         LangchainGenericProvider(
@@ -185,7 +186,7 @@ async def on_chat_start():
             is_chat=True,
             # Not enough context to LangchainGenericProvider
             # https://github.com/Chainlit/chainlit/blob/main/backend/chainlit/playground/providers/langchain.py#L27
-            # inputs=inputs,
+            inputs=wiki.inputs,
         )
     )
     await cl.ChatSettings(inputs).send()

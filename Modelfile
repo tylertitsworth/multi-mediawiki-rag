@@ -1,6 +1,10 @@
 FROM neural-chat
 # FROM ./model/<modelname>/q4_0.bin
 
+PARAMETER stop [INST]
+PARAMETER stop ```
+PARAMETER stop ##
+
 TEMPLATE """{{- if .First }}
 ### System:
 {{ .System }}

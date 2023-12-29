@@ -1,4 +1,4 @@
-from chainlit.input_widget import Slider
+from chainlit.input_widget import Slider, TextInput
 from chainlit.playground.config import add_llm_provider
 from langchain.cache import SQLiteCache
 from langchain.callbacks.manager import CallbackManager
@@ -52,6 +52,21 @@ class MultiWiki:
 wiki = MultiWiki()
 
 
+def rename_duplicates(documents):
+    document_counts = {}
+
+    for idx, doc in enumerate(documents):
+        doc_source = doc.metadata["source"]
+        count = document_counts.get(doc_source, 0) + 1
+        document_counts[doc_source] = count
+
+        documents[idx].metadata["source"] = (
+            doc_source if count == 1 else f"{doc_source}_{count - 1}"
+        )
+
+    return documents
+
+
 def create_vector_db(embeddings_model, source, wikis):
     if not source:
         print("No data sources found")
@@ -75,6 +90,7 @@ def create_vector_db(embeddings_model, source, wikis):
     # https://python.langchain.com/docs/integrations/document_loaders/merge_doc
     loader_all = MergedDataLoader(loaders=wikis.values())
     documents = loader_all.load()
+    documents = rename_duplicates(documents)
     print(f"Embedding {len(documents)} Pages, this may take a while.")
     # https://python.langchain.com/docs/integrations/vectorstores/chroma
     vectordb = Chroma.from_documents(
@@ -120,7 +136,9 @@ def create_chain(embeddings_model, model):
         chain_type="stuff",
         llm=model,
         memory=memory,
-        retriever=vectordb.as_retriever(),
+        retriever=vectordb.as_retriever(
+            search_kwargs={"k": int(wiki.inputs["num_sources"])}
+        ),
         return_source_documents=True,
     )
 
@@ -139,6 +157,12 @@ async def on_chat_start():
 
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [
+        TextInput(
+            id="num_sources",
+            label="# of Sources",
+            initial=str(wiki.inputs["num_sources"]),
+            description="Number of sources returned based on their similarity source. The same source can be returned more than once. (Default: 4)",
+        ),
         Slider(
             id="temperature",
             label="Temperature",
@@ -155,7 +179,7 @@ async def on_chat_start():
             min=0.5,
             max=2.5,
             step=0.1,
-            description="Sets how strongly to penalize repetitions. A higher value (e.g., 1.5) will penalize repetitions more strongly, while a lower value (e.g., 0.9) will be more lenient. (Default: 1.1)",
+            description="Sets how strongly to penalize repetitions. A higher value will penalize repetitions more strongly. (Default: 1.1)",
         ),
         Slider(
             id="top_k",
@@ -164,7 +188,7 @@ async def on_chat_start():
             min=0,
             max=100,
             step=1,
-            description="Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)",
+            description="Reduces the probability of generating nonsense. A higher value will give more diverse answers. (Default: 40)",
         ),
         Slider(
             id="top_p",
@@ -173,7 +197,7 @@ async def on_chat_start():
             min=0,
             max=1,
             step=0.1,
-            description="Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)",
+            description="Works together with top-k. A higher value will lead to more diverse text. (Default: 0.9)",
         ),
     ]
     wiki.set_chat_settings(inputs)

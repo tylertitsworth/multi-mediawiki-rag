@@ -6,7 +6,6 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.chat_models import ChatOllama
 from langchain.document_loaders import MWDumpLoader
-from langchain.document_loaders.merge import MergedDataLoader
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
@@ -76,8 +75,8 @@ def create_vector_db(embeddings_model, source, wikis):
     embeddings = HuggingFaceEmbeddings(
         model_name=embeddings_model, cache_folder="./model"
     )
-
-    for wiki in wikis.keys():
+    merged_documents = []
+    for idx, wiki in enumerate(wikis.keys()):
         # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
         wikis[wiki] = MWDumpLoader(
             encoding="utf-8",
@@ -87,14 +86,15 @@ def create_vector_db(embeddings_model, source, wikis):
             skip_redirects=True,
             stop_on_error=False,
         )
-    # https://python.langchain.com/docs/integrations/document_loaders/merge_doc
-    loader_all = MergedDataLoader(loaders=wikis.values())
-    documents = loader_all.load()
-    documents = rename_duplicates(documents)
-    print(f"Embedding {len(documents)} Pages, this may take a while.")
+        wikis[wiki] = wikis[wiki].load()
+        wikis[wiki] = rename_duplicates(wikis[wiki])
+        for jdx, doc in enumerate(wikis[wiki]):
+            wikis[wiki][jdx].metadata["source"] = doc.metadata["source"] + " - " + list(wikis)[idx]
+            merged_documents.append(wikis[wiki][jdx])
+    print(f"Embedding {len(merged_documents)} Pages, this may take a while.")
     # https://python.langchain.com/docs/integrations/vectorstores/chroma
     vectordb = Chroma.from_documents(
-        documents=documents,
+        documents=merged_documents,
         embedding=embeddings,
         persist_directory="data",
     )

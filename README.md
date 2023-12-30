@@ -153,7 +153,8 @@ within Kara-Tur.
 Choose a new [Filetype Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
 ```python
-    for wiki in wikis.keys():
+    merged_documents = []
+    for idx, wiki in enumerate(wikis.keys()):
         wikis[wiki] = MWDumpLoader(
             encoding="utf-8",
             file_path=f"{source}/{wiki}_pages_current.xml",
@@ -161,11 +162,16 @@ Choose a new [Filetype Document Loader](https://python.langchain.com/docs/module
             skip_redirects=True,
             stop_on_error=False,
         )
+        wikis[wiki] = wikis[wiki].load()
+        wikis[wiki] = rename_duplicates(wikis[wiki])
+        for jdx, doc in enumerate(wikis[wiki]):
+            wikis[wiki][jdx].metadata["source"] = doc.metadata["source"] + " - " + list(wikis)[idx]
+            merged_documents.append(wikis[wiki][jdx])
     ### Insert a new loader
     from langchain.document_loaders import TextLoader
-    wikis.append({"mydocument": TextLoader("./mydocument.md")})
+    myloader = TextLoader("./mydocument.md")
+    merged_documents.append({"mydocument": myloader.load()})
     ###
-    loader_all = MergedDataLoader(loaders=wikis.values())
 ```
 
 Re-embed to include the new data for retrieval.

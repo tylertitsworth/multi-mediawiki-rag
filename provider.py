@@ -65,6 +65,7 @@ class LangchainGenericProvider(BaseProvider):
         await super().create_completion(request)
 
         self.require_settings(request.prompt.settings)
+        del request.prompt.settings["num_sources"]
 
         messages = self.create_prompt(request)
 

@@ -1,6 +1,7 @@
 data_dir: ./data
 # Huggingface
 embeddings_model: sentence-transformers/all-mpnet-base-v2
+introduction: Ah my good fellow!
 # Sources
 mediawikis:
   # - dnd4e

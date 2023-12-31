@@ -155,11 +155,12 @@ Choose a new [Filetype Document Loader](https://python.langchain.com/docs/module
 ```python
 Document = namedtuple("Document", ["page_content", "metadata"])
 merged_documents = []
-for wiki, _ in mediawikis.items():
+
+for dump, _ in wiki.mediawikis.items():
     # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
     loader = MWDumpLoader(
         encoding="utf-8",
-        file_path=f"{source}/{wiki}_pages_current.xml",
+        file_path=f"{wiki.source}/{dump}_pages_current.xml",
         # https://www.mediawiki.org/wiki/Help:Namespaces
         namespaces=[0],
         skip_redirects=True,
@@ -195,8 +196,6 @@ Access the Chatbot GUI at `http://localhost:8000`.
 pip install pytest
 # Basic Testing
 pytest test/test.py -W ignore::DeprecationWarning
-# With Embedding
-pytest test/test.py -W ignore::DeprecationWarning --embed
 # With Ollama Model Backend
 pytest test/test.py -W ignore::DeprecationWarning --ollama
 ```

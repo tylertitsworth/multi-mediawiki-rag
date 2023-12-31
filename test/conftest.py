@@ -1,9 +1,6 @@
 import pytest
 
 optional_markers = {
-    "embed": {"help": "Test VectorDB Embeddings",
-             "marker-descr": "Enable embed tests",
-             "skip-reason": "Test only runs with the --{} option."},
     "ollama": {"help": "Test ollama backend with Langchain",
              "marker-descr": "Enable langchain tests with ollana",
              "skip-reason": "Test only runs with the --{} option."},

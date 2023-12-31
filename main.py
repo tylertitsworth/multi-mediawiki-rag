@@ -18,6 +18,10 @@ import argparse
 import chainlit as cl
 import yaml
 
+import torch
+if not torch.cuda.is_available():
+    torch.set_num_threads(torch.get_num_threads() * 2)
+
 
 class MultiWiki:
     def __init__(self):
@@ -40,16 +44,18 @@ class MultiWiki:
     def set_args(self, args):
         self.args = args
 
-    # https://github.com/jmorganca/ollama/blob/main/docs/api.md#show-model-information
     def set_chat_settings(self, settings):
+        # Update global wiki, not local self
+        global wiki
         if not settings:
-            self.inputs = wiki.settings
+            wiki.inputs = wiki.settings
         else:
-            self.inputs = settings
+            wiki.inputs = settings
 
 
 ### Globals
 wiki = MultiWiki()
+wiki.set_chat_settings(None)
 
 
 def rename_duplicates(documents):
@@ -67,19 +73,15 @@ def rename_duplicates(documents):
     return documents
 
 
-def create_vector_db(data_dir, embeddings_model, source, mediawikis):
-    if not source:
-        print("No data sources found")
-        exit(1)
-
+def create_vector_db():
     Document = namedtuple("Document", ["page_content", "metadata"])
     merged_documents = []
 
-    for wiki, _ in mediawikis.items():
+    for dump, _ in wiki.mediawikis.items():
         # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
         loader = MWDumpLoader(
             encoding="utf-8",
-            file_path=f"{source}/{wiki}_pages_current.xml",
+            file_path=f"{wiki.source}/{dump}_pages_current.xml",
             # https://www.mediawiki.org/wiki/Help:Namespaces
             namespaces=[0],
             skip_redirects=True,
@@ -89,24 +91,24 @@ def create_vector_db(data_dir, embeddings_model, source, mediawikis):
         # Modify the source metadata by accounting for duplicates (<name>_n)
         # And add the mediawiki title (<name>_n - <wikiname>)
         merged_documents.extend(
-            Document(doc.page_content, {"source": doc.metadata["source"] + f" - {wiki}"})
+            Document(doc.page_content, {"source": doc.metadata["source"] + f" - {dump}"})
             for doc in rename_duplicates(loader.load())
         )
     print(f"Embedding {len(merged_documents)} Pages, this may take a while.")
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub
     embeddings = HuggingFaceEmbeddings(
-        model_name=embeddings_model, cache_folder="./model"
+        model_name=wiki.embeddings_model, cache_folder="./model"
     )
     # https://python.langchain.com/docs/integrations/vectorstores/chroma
     vectordb = Chroma.from_documents(
         documents=merged_documents,
         embedding=embeddings,
-        persist_directory=data_dir,
+        persist_directory=wiki.data_dir,
     )
     vectordb.persist()
 
 
-def create_chain(embeddings_model, model):
+def create_chain():
     # https://python.langchain.com/docs/modules/memory/chat_messages/
     message_history = ChatMessageHistory()
     # https://python.langchain.com/docs/modules/memory/
@@ -119,22 +121,24 @@ def create_chain(embeddings_model, model):
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub
     embeddings = HuggingFaceEmbeddings(
         cache_folder="./model",
-        model_name=embeddings_model,
+        model_name=wiki.embeddings_model,
     )
     vectordb = Chroma(persist_directory=wiki.data_dir, embedding_function=embeddings)
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     # https://python.langchain.com/docs/integrations/llms/llm_caching
     set_llm_cache(SQLiteCache(database_path="memory/cache.db"))
-    wiki.set_chat_settings(None)
     # https://python.langchain.com/docs/integrations/llms/ollama
+    # Wiki loses its global scope when used as a parameter in ChatOllama()
+    # Unsure as to why
+    inputs = wiki.inputs
     model = ChatOllama(
         cache=True,
         callback_manager=callback_manager,
-        model=model,
-        repeat_penalty=wiki.inputs["repeat_penalty"],
-        temperature=wiki.inputs["temperature"],
-        top_k=wiki.inputs["top_k"],
-        top_p=wiki.inputs["top_p"],
+        model=wiki.model,
+        repeat_penalty=inputs["repeat_penalty"],
+        temperature=inputs["temperature"],
+        top_k=inputs["top_k"],
+        top_p=inputs["top_p"],
     )
     # https://api.python.langchain.com/en/latest/chains/langchain.chains.conversational_retrieval.base.ConversationalRetrievalChain.html
     chain = ConversationalRetrievalChain.from_llm(
@@ -147,19 +151,14 @@ def create_chain(embeddings_model, model):
         return_source_documents=True,
     )
 
-    return chain, model
+    return chain
 
 
 # https://docs.chainlit.io/integrations/langchain
 # https://docs.chainlit.io/examples/qa
 @cl.on_chat_start
 async def on_chat_start():
-    chain, llm = create_chain(
-        wiki.embeddings_model,
-        wiki.model,
-    )
-    wiki.set_chat_settings(None)
-
+    chain = create_chain()
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [
         TextInput(
@@ -209,9 +208,9 @@ async def on_chat_start():
     # https://docs.chainlit.io/observability-iteration/prompt-playground/llm-providers#langchain-provider
     add_llm_provider(
         LangchainGenericProvider(
-            id=llm._llm_type,
+            id=chain.combine_docs_chain.llm_chain.llm._llm_type,
             name="Ollama",
-            llm=llm,
+            llm=chain.combine_docs_chain.llm_chain.llm,
             is_chat=True,
             # Not enough context to LangchainGenericProvider
             # https://github.com/Chainlit/chainlit/blob/main/backend/chainlit/playground/providers/langchain.py#L27
@@ -219,6 +218,7 @@ async def on_chat_start():
         )
     )
     await cl.ChatSettings(inputs).send()
+    # await cl.Message(content=wiki.introduction, disable_human_feedback=True).send()
 
     cl.user_session.set("chain", chain)
 
@@ -267,17 +267,9 @@ if __name__ == "__main__":
     wiki.set_args(parser.parse_args())
 
     if wiki.args.embed:
-        create_vector_db(
-            wiki.data_dir,
-            wiki.embeddings_model,
-            wiki.source,
-            wiki.mediawikis,
-        )
+        create_vector_db()
 
-    chain, llm = create_chain(
-        wiki.embeddings_model,
-        wiki.model,
-    )
+    chain = create_chain()
 
     if not wiki.question:
         print("No Prompt for Chatbot found")

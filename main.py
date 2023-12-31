@@ -37,9 +37,6 @@ class MultiWiki:
             exit(1)
         self.convert_struct(**data)
 
-    def __getattr__(self, attr):
-        return self[attr]
-
     def convert_struct(self, **kwargs):
         for key, value in kwargs.items():
             if isinstance(value, dict):
@@ -159,10 +156,7 @@ def create_chain():
     return chain
 
 
-# https://docs.chainlit.io/integrations/langchain
-# https://docs.chainlit.io/examples/qa
-@cl.on_chat_start
-async def on_chat_start():
+async def update_cl():
     chain = create_chain()
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [
@@ -223,9 +217,15 @@ async def on_chat_start():
         )
     )
     await cl.ChatSettings(inputs).send()
-    # await cl.Message(content=wiki.introduction, disable_human_feedback=True).send()
-
     cl.user_session.set("chain", chain)
+
+
+# https://docs.chainlit.io/integrations/langchain
+# https://docs.chainlit.io/examples/qa
+@cl.on_chat_start
+async def on_chat_start():
+    await update_cl()
+    await cl.Message(content=wiki.introduction, disable_human_feedback=True).send()
 
 
 @cl.on_message
@@ -262,7 +262,7 @@ async def on_message(message: cl.Message):
 @cl.on_settings_update
 async def setup_agent(settings):
     wiki.set_chat_settings(settings)
-    await on_chat_start()
+    await update_cl()
 
 
 if __name__ == "__main__":

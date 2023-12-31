@@ -16,19 +16,19 @@ def test_multiwiki():
     assert wiki.model == "volo"
     assert wiki.question == "How many eyestalks does a Beholder have?"
     assert wiki.source == "./sources"
-    assert wiki.mediawikis == {
-        # "dnd4e": "",
-        "dnd5e": "",
-        # "darksun": "",
-        "dragonlance": "",
-        "eberron": "",
-        # "exandria": "",
-        "greyhawk": "",
-        "forgottenrealms": "",
-        # "planescape": "",
-        # "ravenloft": "",
-        # "spelljammer": "",
-    }
+    assert wiki.mediawikis == [
+        # "dnd4e",
+        "dnd5e",
+        # "darksun",
+        "dragonlance",
+        "eberron",
+        # "exandria",
+        "forgottenrealms",
+        "greyhawk",
+        # "planescape",
+        # "ravenloft",
+        # "spelljammer",
+    ]
 
 
 def test_multiwiki_set_args():

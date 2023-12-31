@@ -170,7 +170,7 @@ for dump, _ in wiki.mediawikis.items():
     # Modify the source metadata by accounting for duplicates (<name>_n)
     # And add the mediawiki title (<name>_n - <wikiname>)
     merged_documents.extend(
-        Document(doc.page_content, {"source": doc.metadata["source"] + f" - {wiki}"})
+        Document(doc.page_content, {"source": doc.metadata["source"] + f" - {dump}"})
         for doc in rename_duplicates(loader.load())
     )
     ### Insert a new loader

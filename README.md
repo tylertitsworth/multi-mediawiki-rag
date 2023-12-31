@@ -153,20 +153,25 @@ within Kara-Tur.
 Choose a new [Filetype Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
 ```python
-    merged_documents = []
-    for idx, wiki in enumerate(wikis.keys()):
-        wikis[wiki] = MWDumpLoader(
-            encoding="utf-8",
-            file_path=f"{source}/{wiki}_pages_current.xml",
-            namespaces=[0],
-            skip_redirects=True,
-            stop_on_error=False,
-        )
-        wikis[wiki] = wikis[wiki].load()
-        wikis[wiki] = rename_duplicates(wikis[wiki])
-        for jdx, doc in enumerate(wikis[wiki]):
-            wikis[wiki][jdx].metadata["source"] = doc.metadata["source"] + " - " + list(wikis)[idx]
-            merged_documents.append(wikis[wiki][jdx])
+Document = namedtuple("Document", ["page_content", "metadata"])
+merged_documents = []
+for wiki, _ in mediawikis.items():
+    # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
+    loader = MWDumpLoader(
+        encoding="utf-8",
+        file_path=f"{source}/{wiki}_pages_current.xml",
+        # https://www.mediawiki.org/wiki/Help:Namespaces
+        namespaces=[0],
+        skip_redirects=True,
+        stop_on_error=False,
+    )
+    # For each Document provided:
+    # Modify the source metadata by accounting for duplicates (<name>_n)
+    # And add the mediawiki title (<name>_n - <wikiname>)
+    merged_documents.extend(
+        Document(doc.page_content, {"source": doc.metadata["source"] + f" - {wiki}"})
+        for doc in rename_duplicates(loader.load())
+    )
     ### Insert a new loader
     from langchain.document_loaders import TextLoader
     myloader = TextLoader("./mydocument.md")

@@ -5,22 +5,24 @@ from main import MultiWiki, create_chain, create_vector_db, rename_duplicates
 
 import argparse
 import pytest
+import shutil
 
 
 def test_multiwiki():
     wiki = MultiWiki()
+    assert wiki.data_dir == "./data"
     assert wiki.embeddings_model == "sentence-transformers/all-mpnet-base-v2"
     assert wiki.model == "volo"
     assert wiki.question == "How many eyestalks does a Beholder have?"
     assert wiki.source == "./sources"
-    assert wiki.wikis == {
+    assert wiki.mediawikis == {
         # "dnd4e": "",
         "dnd5e": "",
         # "darksun": "",
-        # "dragonlance": "",
-        # "eberron": "",
+        "dragonlance": "",
+        "eberron": "",
         # "exandria": "",
-        # "greyhawk": "",
+        "greyhawk": "",
         "forgottenrealms": "",
         # "planescape": "",
         # "ravenloft": "",
@@ -41,16 +43,16 @@ def test_multiwiki_set_args():
 def test_rename_duplicates():
     wiki = MultiWiki()
     source = wiki.source
-    wikis = wiki.wikis
-    for wiki in wikis.keys():
-        wikis[wiki] = MWDumpLoader(
+    mediawikis = wiki.mediawikis
+    for wiki in mediawikis.keys():
+        mediawikis[wiki] = MWDumpLoader(
             encoding="utf-8",
             file_path=f"{source}/{wiki}_pages_current.xml",
             namespaces=[0],
             skip_redirects=True,
             stop_on_error=False,
         )
-    loader_all = MergedDataLoader(loaders=wikis.values())
+    loader_all = MergedDataLoader(loaders=mediawikis.values())
     documents = loader_all.load()
 
     doc_counter = Counter([doc.metadata["source"] for doc in documents])
@@ -68,8 +70,9 @@ def test_rename_duplicates():
 @pytest.mark.embed
 def test_create_vector_db():
     create_vector_db(
-        "sentence-transformers/all-mpnet-base-v2", "./sources", {"dnd5e": ""}
+        "test_data", "sentence-transformers/all-mpnet-base-v2", "./sources", {"dnd5e": ""}
     )
+    shutil.rmtree("test_data")
 
 
 @pytest.mark.ollama

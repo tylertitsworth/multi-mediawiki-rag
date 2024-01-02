@@ -114,6 +114,9 @@ def create_vector_db():
     )
     vectordb.persist()
 
+###
+# https://python.langchain.com/docs/integrations/retrievers/merger_retriever
+###
 
 def create_chain():
     # https://python.langchain.com/docs/modules/memory/chat_messages/
@@ -164,7 +167,7 @@ async def update_cl():
             id="num_sources",
             label="# of Sources",
             initial=str(wiki.num_sources),
-            description="Number of sources returned based on their similarity source. The same source can be returned more than once. (Default: 4)",
+            description="Number of sources returned based on their similarity score. The same source can be returned more than once. (Default: 4)",
         ),
         Slider(
             id="temperature",

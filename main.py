@@ -54,13 +54,10 @@ class MultiWiki:
         if isinstance(settings, dict):
             for key, val in settings.items():
                 setattr(wiki, key, val)
-        if settings:
-            wiki.settings = settings
 
 
 ### Globals
 wiki = MultiWiki()
-wiki.set_chat_settings(None)
 
 
 def rename_duplicates(documents):
@@ -114,9 +111,6 @@ def create_vector_db():
     )
     vectordb.persist()
 
-###
-# https://python.langchain.com/docs/integrations/retrievers/merger_retriever
-###
 
 def create_chain():
     # https://python.langchain.com/docs/modules/memory/chat_messages/
@@ -159,7 +153,8 @@ def create_chain():
     return chain
 
 
-async def update_cl():
+async def update_cl(settings):
+    wiki.set_chat_settings(settings)
     chain = create_chain()
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [
@@ -206,7 +201,6 @@ async def update_cl():
             description="Works together with top-k. A higher value will lead to more diverse text. (Default: 0.9)",
         ),
     ]
-    wiki.set_chat_settings(inputs)
     # https://docs.chainlit.io/observability-iteration/prompt-playground/llm-providers#langchain-provider
     add_llm_provider(
         LangchainGenericProvider(
@@ -216,7 +210,7 @@ async def update_cl():
             is_chat=True,
             # Not enough context to LangchainGenericProvider
             # https://github.com/Chainlit/chainlit/blob/main/backend/chainlit/playground/providers/langchain.py#L27
-            inputs=wiki.settings,
+            inputs=[input for input in inputs if isinstance(input, Slider)],
         )
     )
     await cl.ChatSettings(inputs).send()
@@ -227,7 +221,7 @@ async def update_cl():
 # https://docs.chainlit.io/examples/qa
 @cl.on_chat_start
 async def on_chat_start():
-    await update_cl()
+    await update_cl(None)
     await cl.Message(content=wiki.introduction, disable_human_feedback=True).send()
 
 
@@ -264,8 +258,7 @@ async def on_message(message: cl.Message):
 
 @cl.on_settings_update
 async def setup_agent(settings):
-    wiki.set_chat_settings(settings)
-    await update_cl()
+    await update_cl(settings)
 
 
 if __name__ == "__main__":

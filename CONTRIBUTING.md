@@ -49,7 +49,7 @@ To ensure a smooth and effective contribution process, please follow these guide
 
 ### Code Style
 
-- Follow the established code style for this project.
+- Follow the established [code style](https://google.github.io/styleguide/pyguide.html) for this project.
 - Consistent and clean code is highly appreciated.
 
 ### Pull Requests

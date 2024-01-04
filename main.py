@@ -1,11 +1,11 @@
 from sys import exit
+from collections import namedtuple
 
 import argparse
 import chainlit as cl
 import yaml
 import torch
 
-from collections import namedtuple
 from chainlit.input_widget import Slider, TextInput
 from chainlit.playground.config import add_llm_provider
 from langchain.cache import SQLiteCache
@@ -33,8 +33,8 @@ class MultiWiki:
         except FileNotFoundError:
             print("Error: File config.yaml not found.")
             exit(1)
-        except yaml.YAMLError as e:
-            print(f"Error reading YAML file: {e}")
+        except yaml.YAMLError as err:
+            print(f"Error reading YAML file: {err}")
             exit(1)
         self.convert_struct(**data)
 
@@ -49,17 +49,15 @@ class MultiWiki:
     def set_args(self, args):
         self.args = args
 
-    def set_chat_settings(self, settings):
-        # Update global wiki, not local self
-        global wiki
-        if isinstance(settings, dict):
-            for key, val in settings.items():
-                setattr(wiki, key, val)
-
 
 # Globals
 wiki = MultiWiki()
 
+
+def set_chat_settings(settings):
+    if isinstance(settings, dict):
+        for key, val in settings.items():
+            setattr(wiki, key, val)
 
 def rename_duplicates(documents):
     document_counts = {}
@@ -155,7 +153,7 @@ def create_chain():
 
 
 async def update_cl(settings):
-    wiki.set_chat_settings(settings)
+    set_chat_settings(settings)
     chain = create_chain()
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [

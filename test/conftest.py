@@ -12,20 +12,18 @@ optional_markers = {
 def pytest_addoption(parser):
     for marker, info in optional_markers.items():
         parser.addoption(
-            "--{}".format(marker), action="store_true", default=False, help=info["help"]
+            f"--{marker}", action="store_true", default=False, help=info["help"]
         )
 
 
 def pytest_configure(config):
     for marker, info in optional_markers.items():
-        config.addinivalue_line(
-            "markers", "{}: {}".format(marker, info["marker-descr"])
-        )
+        config.addinivalue_line("markers", f"{marker}: {info['marker-descr']}")
 
 
 def pytest_collection_modifyitems(config, items):
     for marker, info in optional_markers.items():
-        if not config.getoption("--{}".format(marker)):
+        if not config.getoption(f"--{marker}"):
             skip_test = pytest.mark.skip(reason=info["skip-reason"].format(marker))
             for item in items:
                 if marker in item.keywords:

@@ -5,5 +5,5 @@ chainlit==0.7.700
 chromadb==0.4.22
 # https://github.com/langchain-ai/langchain/issues/14980
 langchain==0.0.349
-mwparserfromhell==0.6.5
+mwparserfromhell==0.6.6
 sentence-transformers==2.2.2

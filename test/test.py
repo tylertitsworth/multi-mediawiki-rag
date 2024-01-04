@@ -1,9 +1,8 @@
-from main import MultiWiki, create_chain
-
 import argparse
 import pytest
-
 import torch
+from main import MultiWiki, create_chain
+
 torch.set_num_threads(22)
 
 wiki = MultiWiki()
@@ -36,7 +35,7 @@ def test_multiwiki_set_args():
     parser.add_argument("--no-embed", dest="embed", action="store_false")
     wiki.set_args(parser.parse_args([]))
     print(wiki.args)
-    assert wiki.args.embed == True
+    assert wiki.args.embed is True
 
 
 @pytest.mark.ollama

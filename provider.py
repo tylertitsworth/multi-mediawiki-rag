@@ -1,9 +1,10 @@
+from typing import List, Union
+
 from chainlit.input_widget import InputWidget
 from chainlit.playground.provider import BaseProvider
 from chainlit.prompt import PromptMessage
 from chainlit.sync import make_async
 from fastapi.responses import StreamingResponse
-from typing import List, Union
 
 
 class LangchainGenericProvider(BaseProvider):
@@ -70,8 +71,7 @@ class LangchainGenericProvider(BaseProvider):
 
         # https://github.com/langchain-ai/langchain/issues/14980
         result = await make_async(self.llm.stream)(
-            input=messages,
-            **request.prompt.settings
+            input=messages, **request.prompt.settings
         )
 
         def create_event_stream():

@@ -1,6 +1,6 @@
 FROM ollama/ollama
 
-RUN apt-get update -y && apt-get install -y \
+RUN apt-get update -y && apt-get install -y --no-install-recommends --fix-missing \
     git \
     python3 \
     python3-pip

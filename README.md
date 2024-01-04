@@ -150,7 +150,7 @@ within Kara-Tur.
 
 #### Add Different Data to DB
 
-Choose a new [Filetype Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
+Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
 ```python
 Document = namedtuple("Document", ["page_content", "metadata"])

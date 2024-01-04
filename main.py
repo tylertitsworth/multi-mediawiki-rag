@@ -1,3 +1,10 @@
+from sys import exit
+
+import argparse
+import chainlit as cl
+import yaml
+import torch
+
 from collections import namedtuple
 from chainlit.input_widget import Slider, TextInput
 from chainlit.playground.config import add_llm_provider
@@ -12,13 +19,7 @@ from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 from langchain.vectorstores import Chroma
 from provider import LangchainGenericProvider
-from sys import exit
 
-import argparse
-import chainlit as cl
-import yaml
-
-import torch
 
 if not torch.cuda.is_available():
     torch.set_num_threads(torch.get_num_threads() * 2)
@@ -56,7 +57,7 @@ class MultiWiki:
                 setattr(wiki, key, val)
 
 
-### Globals
+# Globals
 wiki = MultiWiki()
 
 
@@ -272,11 +273,10 @@ if __name__ == "__main__":
 
     chain = create_chain()
 
-    if not wiki.question:
-        print("No Prompt for Chatbot found")
+    if wiki.question:
+        res = chain(wiki.question)
+        answer = res["answer"]
+        print(answer)
+        print([source_doc.page_content for source_doc in res["source_documents"]])
+    else:
         exit(1)
-
-    res = chain(wiki.question)
-    answer = res["answer"]
-    print(answer)
-    print([source_doc.page_content for source_doc in res["source_documents"]])

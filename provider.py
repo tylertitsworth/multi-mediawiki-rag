@@ -1,9 +1,10 @@
+from typing import List, Union
+
 from chainlit.input_widget import InputWidget
 from chainlit.playground.provider import BaseProvider
 from chainlit.prompt import PromptMessage
 from chainlit.sync import make_async
 from fastapi.responses import StreamingResponse
-from typing import List, Union
 
 
 class LangchainGenericProvider(BaseProvider):

@@ -1,3 +1,4 @@
+---
 name: Sync Space
 on:
   push:
@@ -13,7 +14,7 @@ jobs:
         fetch-depth: 0
     - name: Login with Huggingface CLI
       run: |
-        pip install -U "huggingface_hub[cli]" hf-transfer
+        pip install -U huggingface_hub[cli] hf-transfer
         git config --global credential.helper store
         huggingface-cli login --token ${{ secrets.HF_TOKEN }}
     - name: Upload Files

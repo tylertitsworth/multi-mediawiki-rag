@@ -1,3 +1,4 @@
+---
 data_dir: ./data
 # Huggingface
 embeddings_model: sentence-transformers/all-mpnet-base-v2

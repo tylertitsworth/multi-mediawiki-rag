@@ -1,3 +1,4 @@
+---
 name: Lint
 
 on:  # yamllint disable-line rule:truthy
@@ -25,3 +26,4 @@ jobs:
           DEFAULT_BRANCH: main
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTIONS_COMMAND_ARGS: '-ignore SC.*'

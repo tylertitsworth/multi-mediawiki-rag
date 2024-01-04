@@ -2,7 +2,7 @@
 git+https://github.com/gdedrouas/python-mwxml@xml_format_0.11
 git+https://github.com/mediawiki-utilities/python-mwtypes@updates_schema_0.11
 chainlit==0.7.700
-chromadb==0.4.21
+chromadb==0.4.22
 # https://github.com/langchain-ai/langchain/issues/14980
 langchain==0.0.349
 mwparserfromhell==0.6.5

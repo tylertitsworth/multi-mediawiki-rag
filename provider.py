@@ -71,8 +71,7 @@ class LangchainGenericProvider(BaseProvider):
 
         # https://github.com/langchain-ai/langchain/issues/14980
         result = await make_async(self.llm.stream)(
-            input=messages,
-            **request.prompt.settings
+            input=messages, **request.prompt.settings
         )
 
         def create_event_stream():

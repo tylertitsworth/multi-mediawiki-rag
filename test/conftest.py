@@ -18,9 +18,7 @@ def pytest_addoption(parser):
 
 def pytest_configure(config):
     for marker, info in optional_markers.items():
-        config.addinivalue_line(
-            "markers", f"{marker}: {info['marker-descr']}"
-        )
+        config.addinivalue_line("markers", f"{marker}: {info['marker-descr']}")
 
 
 def pytest_collection_modifyitems(config, items):

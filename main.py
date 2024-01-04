@@ -50,7 +50,6 @@ class MultiWiki:
         self.args = args
 
 
-# Globals
 wiki = MultiWiki()
 
 
@@ -58,6 +57,7 @@ def set_chat_settings(settings):
     if isinstance(settings, dict):
         for key, val in settings.items():
             setattr(wiki, key, val)
+
 
 def rename_duplicates(documents):
     document_counts = {}

@@ -1,3 +1,4 @@
+# pylint: skip-file
 from typing import List, Union
 
 from chainlit.input_widget import InputWidget

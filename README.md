@@ -156,9 +156,12 @@ within Kara-Tur.
 
 Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
-```python
+```py
+# main.py#L78-L99
+
 Document = namedtuple("Document", ["page_content", "metadata"])
 merged_documents = []
+
 for dump in wiki.mediawikis:
     # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
     loader = MWDumpLoader(
@@ -178,15 +181,17 @@ for dump in wiki.mediawikis:
         )
         for doc in rename_duplicates(loader.load())
     )
-    ### Insert a new loader
-    from langchain.document_loaders import TextLoader
-    myloader = TextLoader("./mydocument.md")
-    merged_documents.append({"mydocument": myloader.load()})
-    ###
-print(f"Embedding {len(merged_documents)} Pages, this may take a while.")
 ```
 
-Re-embed to include the new data for retrieval.
+Insert a new loader
+
+```python
+from langchain.document_loaders import TextLoader
+myloader = TextLoader("./mydocument.md")
+merged_documents.append({"mydocument": myloader.load()})
+```
+
+[Re-embed](#create-vector-database) to include the new data for retrieval.
 
 ### Start Chatbot
 

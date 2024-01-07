@@ -28,9 +28,11 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Download Sources
         run: |
-          python -m pip install huggingface-cli
+          python -m pip install huggingface-cli hf_transfer
           huggingface-cli login --token ${{ secrets.HF_TOKEN }}
-          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons --include *.xml
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons --include *.xml --local-dir .
+        env:
+          HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Create Embeddings
         run: python main.py
       - name: Upload Build Artifacts

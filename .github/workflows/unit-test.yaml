@@ -1,12 +1,13 @@
 ---
 name: Unit Tests
+permissions: read-all
 on:
   pull_request:
     branches:
       - main
 
 jobs:
-  unit-test:
+  pytest:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

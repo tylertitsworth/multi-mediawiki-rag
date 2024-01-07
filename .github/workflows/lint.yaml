@@ -1,6 +1,6 @@
 ---
 name: Lint
-
+permissions: read-all
 on:  # yamllint disable-line rule:truthy
   push: null
 

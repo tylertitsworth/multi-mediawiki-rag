@@ -1,21 +1,22 @@
 ---
-name: Embed Tests
+name: Integration Test
+permissions: read-all
 on:
   push:
-  # pull_request:
-  #   types:
-  #     - closed
+# on:
+#   pull_request_review:
+#     types: [submitted]
 
 jobs:
   embed-test:
+    # if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     container:
       image: ollama/ollama
-    # if: github.event.pull_request.merged == true
     steps:
       - uses: actions/checkout@v4
       - name: Install git
-        run: apt-get install git -y
+        run: apt-get install git sqlite3 -y
       - name: Setup Ollama
         run: |
           ollama serve &

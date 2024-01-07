@@ -91,12 +91,14 @@ These instructions will get you a copy of the project up and running on your loc
 
 These steps assume you are using a modern Linux OS like Ubuntu with Python 3.10+.
 
-1. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics` or using a tool like [wikiteam3](https://pypi.org/project/wikiteam3/).
-    1. Download current pages, not the entire history.
-    2. Provide in the following format: `sources/<wikiname>_pages_current.xml`
-2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`.
-3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration data.
-4. Create a directory to store chat history with `mkdir memory`.
+1. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics` or using a tool like [wikiteam3](https://pypi.org/project/wikiteam3/)
+    1. If Downloading, download only the current pages, not the entire history
+    2. If using `wikiteam3`, scrape only namespace 0
+    3. Provide in the following format: `sources/<wikiname>_pages_current.xml`
+2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`
+   1. Follow the manual setup instructions to set up Ollama as a systemd service
+3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration information
+4. Create a directory to store chat history with `mkdir memory`
 5. Install python requirements:
 
 ```bash
@@ -157,8 +159,7 @@ Choose a new [File type Document Loader](https://python.langchain.com/docs/modul
 ```python
 Document = namedtuple("Document", ["page_content", "metadata"])
 merged_documents = []
-
-for dump, _ in wiki.mediawikis.items():
+for dump in wiki.mediawikis:
     # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
     loader = MWDumpLoader(
         encoding="utf-8",
@@ -172,7 +173,9 @@ for dump, _ in wiki.mediawikis.items():
     # Modify the source metadata by accounting for duplicates (<name>_n)
     # And add the mediawiki title (<name>_n - <wikiname>)
     merged_documents.extend(
-        Document(doc.page_content, {"source": doc.metadata["source"] + f" - {dump}"})
+        Document(
+            doc.page_content, {"source": doc.metadata["source"] + f" - {dump}"}
+        )
         for doc in rename_duplicates(loader.load())
     )
     ### Insert a new loader
@@ -180,6 +183,7 @@ for dump, _ in wiki.mediawikis.items():
     myloader = TextLoader("./mydocument.md")
     merged_documents.append({"mydocument": myloader.load()})
     ###
+print(f"Embedding {len(merged_documents)} Pages, this may take a while.")
 ```
 
 Re-embed to include the new data for retrieval.

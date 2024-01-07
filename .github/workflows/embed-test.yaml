@@ -1,26 +1,38 @@
 ---
-    name: Embed Tests
-    on:
-      push:
-      # pull_request:
-      #   types:
-      #     - closed
+name: Embed Tests
+on:
+  push:
+  # pull_request:
+  #   types:
+  #     - closed
 
-    jobs:
-      unit-test:
-        runs-on: ubuntu-latest
-        # if: github.event.pull_request.merged == true
-        container:
-          image: Dockerfile
-        steps:
-        - name: Download Source Files from HF
-          run: |
-            pip install huggingface-cli
-            huggingface-cli login --token ${{ secrets.HF_TOKEN }}
-            huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons --include *.xml
-        - name: Create Embeddings
-          run: python main.py
-        - uses: actions/upload-artifact@v4
-          with:
-            name: Chroma VectorDB Embeddings
-            path: data/
+jobs:
+  embed-test:
+    runs-on: ubuntu-latest
+    container:
+      image: ollama/ollama
+    # if: github.event.pull_request.merged == true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Setup Ollama
+        run: |
+          ollama serve &
+          sleep 5
+          ollama create volo -f ./Modelfile
+      - name: Install Requirements
+        run: pip install -r requirements.txt
+      - name: Download Sources
+        run: |
+          pip install huggingface-cli
+          huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons --include *.xml
+      - name: Create Embeddings
+        run: python main.py
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Chroma VectorDB Embeddings
+          path: data/

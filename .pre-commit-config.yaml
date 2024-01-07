@@ -4,12 +4,12 @@ repos:
     rev: v4.5.0
     hooks:
     - id: check-yaml
-    - id: end-of-file-fixer
-    - id: trailing-whitespace
     - id: debug-statements
+    - id: end-of-file-fixer
+    - id: forbid-submodules
     - id: sort-simple-yaml
       files: config.yaml
-    - id: forbid-submodules
+    - id: trailing-whitespace
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
@@ -22,17 +22,17 @@ repos:
       args: ["--config", ".github/linters/.markdown-lint.yaml"]
   - repo: local
     hooks:
+      - id: embedme
+        name: embedme
+        entry: npx
+        language: system
+        args: ["embedme", "README.md"]
       - id: pylint
         name: pylint
         entry: pylint
         language: system
         types: [python]
         args: ["--rcfile=.github/linters/.python-lint"]
-      - id: embedme
-        name: embedme
-        entry: npx
-        language: system
-        args: ["embedme", "README.md"]
       - id: pytest
         name: pytest
         entry: pytest

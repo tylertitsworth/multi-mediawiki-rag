@@ -3,9 +3,13 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
-    -   id: check-yaml
-    -   id: end-of-file-fixer
-    -   id: trailing-whitespace
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+    - id: debug-statements
+    - id: sort-simple-yaml
+      files: config.yaml
+    - id: forbid-submodules
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
@@ -29,3 +33,9 @@ repos:
         entry: npx
         language: system
         args: ["embedme", "README.md"]
+      - id: pytest
+        name: pytest
+        entry: pytest
+        language: system
+        types: [python]
+        args: ["test/test.py", "-W", "ignore::DeprecationWarning", "--ollama"]

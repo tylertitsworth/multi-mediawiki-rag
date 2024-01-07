@@ -136,7 +136,7 @@ python main.py
 2023-12-16 09:50:53 - Loaded .env file
 2023-12-16 09:50:55 - Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
 2023-12-16 09:51:18 - Use pytorch device: cpu
-2023-12-16 09:56:09 - Anonymized telemetry enabled. See 
+2023-12-16 09:56:09 - Anonymized telemetry enabled. See
 https://docs.trychroma.com/telemetry for more information.
 Batches: 100%|████████████████████████████████████████| 1303/1303 [1:23:14<00:00,  3.83s/it]
 ...

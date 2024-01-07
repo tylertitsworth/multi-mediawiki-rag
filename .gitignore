@@ -8,4 +8,6 @@ chainlit.md
 data
 memory
 model
+package-lock.json
+package.json
 sources

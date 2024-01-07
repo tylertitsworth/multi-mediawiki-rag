@@ -1,5 +1,5 @@
 ---
-    name: Unit Tests
+    name: Embed Tests
     on:
       push:
       # pull_request:

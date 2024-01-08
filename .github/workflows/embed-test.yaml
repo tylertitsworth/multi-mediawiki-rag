@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ollama/ollama
-      options: --shm-size=4gb
+      options: --shm-size=7gb
     steps:
       - uses: actions/checkout@v4
       - name: Install git
@@ -32,7 +32,10 @@ jobs:
         run: |
           python -m pip install huggingface-cli hf_transfer
           huggingface-cli login --token ${{ secrets.HF_TOKEN }}
-          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons --include *.xml --local-dir .
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+          --include *.xml \
+          --local-dir . \
+          --local-dir-use-symlinks False
         env:
           HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Create Embeddings

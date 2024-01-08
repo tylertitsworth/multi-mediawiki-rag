@@ -23,27 +23,29 @@ jobs:
           ollama serve &
           sleep 5
           ollama create volo -f ./Modelfile
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
-      - name: Install Requirements
-        run: python -m pip install -r requirements.txt
-      - name: Download Sources
-        run: |
-          python -m pip install huggingface-cli hf_transfer
-          huggingface-cli login --token ${{ secrets.HF_TOKEN }}
-          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include *.xml \
-          --local-dir . \
-          --local-dir-use-symlinks False
-        env:
-          HF_HUB_ENABLE_HF_TRANSFER: 1
-      - name: Create Embeddings
-        run: |
-          mkdir memory
-          python main.py --test-embed
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: Chroma VectorDB Embeddings
-          path: test_data/
+      - name: Test Ollama
+        run: ollama run volo --verbose 'test'
+      # - uses: actions/setup-python@v5
+      #   with:
+      #     python-version: '3.10'
+      # - name: Install Requirements
+      #   run: python -m pip install -r requirements.txt
+      # - name: Download Sources
+      #   run: |
+      #     python -m pip install huggingface-cli hf_transfer
+      #     huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+      #     huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+      #     --include *.xml \
+      #     --local-dir . \
+      #     --local-dir-use-symlinks False
+      #   env:
+      #     HF_HUB_ENABLE_HF_TRANSFER: 1
+      # - name: Create Embeddings
+      #   run: |
+      #     mkdir memory
+      #     python main.py --test-embed
+      # - name: Upload Build Artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: Chroma VectorDB Embeddings
+      #     path: test_data/

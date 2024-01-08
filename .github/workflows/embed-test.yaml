@@ -7,7 +7,9 @@ on:
 
 jobs:
   embed-test:
-    if: github.event.review.state == 'approved'
+    if: >
+      github.event.review.state == 'approved' ||
+      contains(github.event.pull_request.assignees.*.login, 'tylertitsworth')
     runs-on: ubuntu-latest
     container:
       image: ollama/ollama

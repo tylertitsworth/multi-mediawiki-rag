@@ -9,16 +9,16 @@ import torch
 from chainlit.input_widget import Slider, TextInput
 from chainlit.playground.config import add_llm_provider
 from chainlit.playground.providers.langchain import LangchainGenericProvider
+from langchain_community.chat_models import ChatOllama
+from langchain_community.document_loaders import MWDumpLoader
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 from langchain.cache import SQLiteCache
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
-from langchain.chat_models import ChatOllama
-from langchain.document_loaders import MWDumpLoader
-from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
-from langchain.vectorstores import Chroma
 
 
 if not torch.cuda.is_available():
@@ -207,8 +207,6 @@ async def update_cl(settings):
             name="Ollama",
             llm=chain.combine_docs_chain.llm_chain.llm,
             is_chat=True,
-            # Not enough context to LangchainGenericProvider
-            # https://github.com/Chainlit/chainlit/blob/main/backend/chainlit/playground/providers/langchain.py#L27
             inputs=[input for input in inputs if isinstance(input, Slider)],
         )
     )

@@ -16,8 +16,8 @@ jobs:
       options: --shm-size=7gb
     steps:
       - uses: actions/checkout@v4
-      - name: Install git
-        run: apt-get install git sqlite3 -y
+      - name: Install apt dependencies
+        run: apt-get install git sqlite3 ca-certificates -y
       - name: Setup Ollama
         run: |
           ollama serve &

@@ -8,6 +8,7 @@ import torch
 
 from chainlit.input_widget import Slider, TextInput
 from chainlit.playground.config import add_llm_provider
+from chainlit.playground.providers.langchain import LangchainGenericProvider
 from langchain.cache import SQLiteCache
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
@@ -18,7 +19,6 @@ from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 from langchain.vectorstores import Chroma
-from provider import LangchainGenericProvider
 
 
 if not torch.cuda.is_available():
@@ -221,7 +221,7 @@ async def update_cl(settings):
 @cl.on_chat_start
 async def on_chat_start():
     await update_cl(None)
-    await cl.Message(content=wiki.introduction, disable_human_feedback=True).send()
+    await cl.Message(content=wiki.introduction, disable_feedback=True).send()
 
 
 @cl.on_message

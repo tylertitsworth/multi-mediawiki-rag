@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: ollama/ollama
+      options: --shm-size=4gb
     steps:
       - uses: actions/checkout@v4
       - name: Install git
@@ -37,7 +38,6 @@ jobs:
       - name: Create Embeddings
         run: |
           mkdir memory
-          ollama serve &
           python main.py --test-embed
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3

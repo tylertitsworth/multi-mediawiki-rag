@@ -35,7 +35,7 @@ jobs:
         env:
           HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Create Embeddings
-        run: python main.py
+        run: python main.py --test-embed
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:

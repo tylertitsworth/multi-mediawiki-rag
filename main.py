@@ -48,7 +48,7 @@ class MultiWiki:
 
     def set_args(self, args):
         self.args = args
-        if self.args.test_embed:
+        if args.test_embed:
             wiki.mediawikis = ["dnd5e"]
             wiki.data_dir = "test_data"
             wiki.question = "What is the AC value of a Beholder?"

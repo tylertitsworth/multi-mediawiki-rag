@@ -1,18 +1,17 @@
----
-license: mit
-pinned: true
-sdk: docker
-title: Multi Mediawiki RAG
----
-# Multi Mediawiki RAG Chatbot
+# Multi Mediawiki RAG Chatbot [![forks - multi-mediawiki-rag](https://img.shields.io/github/forks/tylertitsworth/multi-mediawiki-rag?style=social)](https://github.com/tylertitsworth/multi-mediawiki-rag) [![stars - multi-mediawiki-rag](https://img.shields.io/github/stars/tylertitsworth/multi-mediawiki-rag?style=social)](https://github.com/tylertitsworth/multi-mediawiki-rag)
 
+[![GitHub tag](https://img.shields.io/github/tag/tylertitsworth/multi-mediawiki-rag?include_prereleases=&sort=semver&color=blue)](https://github.com/tylertitsworth/multi-mediawiki-rag/releases/)
+[![issues - multi-mediawiki-rag](https://img.shields.io/github/issues/tylertitsworth/multi-mediawiki-rag)](https://github.com/tylertitsworth/multi-mediawiki-rag/issues)
+[![License](https://img.shields.io/badge/License-MIT-blue)](#license)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8272/badge)](https://www.bestpractices.dev/projects/8272)
+[![PRs - Welcome](https://img.shields.io/badge/PRs-Welcome-2ea44f)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
+[![Unit Tests](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/Unit%20Tests/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions?query=workflow:"Unit+Tests")
 
 [Chatbots](https://www.forbes.com/advisor/business/software/what-is-a-chatbot/) are very popular right now. Most openly accessible information is stored in some kind of a [Mediawiki](https://en.wikipedia.org/wiki/MediaWiki). Creating a [RAG](https://research.ibm.com/blog/retrieval-augmented-generation-RAG) Chatbot is becoming a very powerful alternative to traditional data gathering. This project is designed to create a basic format for creating your own chatbot to run locally on linux.
 
 ## Table of Contents
 
-- [Multi Mediawiki RAG Chatbot](#multi-mediawiki-rag-chatbot)
+- [Multi Mediawiki RAG Chatbot  ](#multi-mediawiki-rag-chatbot--)
   - [Table of Contents](#table-of-contents)
   - [About](#about)
     - [Architecture](#architecture)
@@ -26,6 +25,7 @@ title: Multi Mediawiki RAG
       - [Add Different Data to DB](#add-different-data-to-db)
     - [Start Chatbot](#start-chatbot)
     - [Unit Testing](#unit-testing)
+  - [License](#license)
 
 ## About
 
@@ -211,3 +211,7 @@ pytest test/test.py -W ignore::DeprecationWarning
 # With Ollama Model Backend
 pytest test/test.py -W ignore::DeprecationWarning --ollama
 ```
+
+## License
+
+Released under [MIT](/LICENSE) by [@tylertitsworth](https://github.com/tylertitsworth).

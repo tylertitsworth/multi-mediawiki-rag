@@ -48,6 +48,10 @@ class MultiWiki:
 
     def set_args(self, args):
         self.args = args
+        if self.args.test_embed:
+            wiki.mediawikis = ["dnd5e"]
+            wiki.data_dir = "test_data"
+            wiki.question = "What is the AC value of a Beholder?"
 
 
 wiki = MultiWiki()
@@ -263,6 +267,7 @@ async def setup_agent(settings):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-embed", dest="embed", action="store_false")
+    parser.add_argument("--test-embed", dest="test_embed", action="store_true")
 
     wiki.set_args(parser.parse_args())
 

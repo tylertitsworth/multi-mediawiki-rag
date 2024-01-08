@@ -54,7 +54,7 @@ graph TD;
 
 ### Filesystem
 
-```text
+```txt
 multi-mediawiki-rag
 ├── .chainlit
 │   ├── .langchain.db # Server Cache
@@ -91,15 +91,16 @@ These instructions will get you a copy of the project up and running on your loc
 
 These steps assume you are using a modern Linux OS like Ubuntu with Python 3.10+.
 
-1. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics` or using a tool like [wikiteam3](https://pypi.org/project/wikiteam3/)
+1. Install [sqlite3](https://www.sqlite.org/index.html)
+2. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics` or using a tool like [wikiteam3](https://pypi.org/project/wikiteam3/)
     1. If Downloading, download only the current pages, not the entire history
     2. If using `wikiteam3`, scrape only namespace 0
     3. Provide in the following format: `sources/<wikiname>_pages_current.xml`
-2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`
+3. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`
    1. Follow the manual setup instructions to set up Ollama as a systemd service
-3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration information
-4. Create a directory to store chat history with `mkdir memory`
-5. Install python requirements:
+4. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration information
+5. Create a directory to store chat history with `mkdir memory`
+6. Install python requirements:
 
 ```bash
 pip install -U pip setuptools wheel
@@ -132,7 +133,7 @@ python main.py
 
 #### Expected Output
 
-```text
+```txt
 2023-12-16 09:50:53 - Loaded .env file
 2023-12-16 09:50:55 - Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
 2023-12-16 09:51:18 - Use pytorch device: cpu
@@ -157,7 +158,7 @@ within Kara-Tur.
 Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
 ```py
-# main.py#L78-L99
+# main.py#L82-L103
 
 Document = namedtuple("Document", ["page_content", "metadata"])
 merged_documents = []
@@ -185,7 +186,7 @@ for dump in wiki.mediawikis:
 
 Insert a new loader
 
-```python
+```py
 from langchain.document_loaders import TextLoader
 myloader = TextLoader("./mydocument.md")
 merged_documents.append({"mydocument": myloader.load()})

@@ -2,14 +2,12 @@
 name: Integration Test
 permissions: read-all
 on:
-  push:
-# on:
-#   pull_request_review:
-#     types: [submitted]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   embed-test:
-    # if: github.event.review.state == 'approved'
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     container:
       image: ollama/ollama
@@ -40,4 +38,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Chroma VectorDB Embeddings
-          path: data/
+          path: test_data/

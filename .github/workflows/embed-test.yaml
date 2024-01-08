@@ -37,6 +37,7 @@ jobs:
       - name: Create Embeddings
         run: |
           mkdir memory
+          ollama serve &
           python main.py --test-embed
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3

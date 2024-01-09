@@ -47,11 +47,11 @@ jobs:
           HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Create Embeddings
         run: |
-          docker run -v $PWD/sources:/home/user/app/sources \
+          docker run -v $PWD/data:/home/user/app/test_data \
+          -v $PWD/sources:/home/user/app/sources \
           ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }} \
           bash -c "ollama serve & python3 main.py --test-embed"
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: Chroma VectorDB Embeddings
-          path: test_data/
+          path: data/

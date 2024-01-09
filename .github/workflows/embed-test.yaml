@@ -6,46 +6,52 @@ on:
     types: [submitted]
 
 jobs:
-  embed-test:
+  container-build:
     if: >
       github.event.review.state == 'approved' ||
       contains(github.event.pull_request.assignees.*.login, 'tylertitsworth')
+    permissions:
+      packages: write
     runs-on: ubuntu-latest
-    container:
-      image: ollama/ollama
-      options: --shm-size=7gb
     steps:
       - uses: actions/checkout@v4
-      - name: Install apt dependencies
-        run: apt-get install git sqlite3 ca-certificates -y
-      - name: Setup Ollama
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}
+      - uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+  embed-test:
+    needs: [container-build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download Sources
         run: |
-          ollama serve &
-          sleep 5
-          ollama create volo -f ./Modelfile
-      - name: Test Ollama
-        run: ollama run volo --verbose 'test'
-      # - uses: actions/setup-python@v5
-      #   with:
-      #     python-version: '3.10'
-      # - name: Install Requirements
-      #   run: python -m pip install -r requirements.txt
-      # - name: Download Sources
-      #   run: |
-      #     python -m pip install huggingface-cli hf_transfer
-      #     huggingface-cli login --token ${{ secrets.HF_TOKEN }}
-      #     huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-      #     --include *.xml \
-      #     --local-dir . \
-      #     --local-dir-use-symlinks False
-      #   env:
-      #     HF_HUB_ENABLE_HF_TRANSFER: 1
-      # - name: Create Embeddings
-      #   run: |
-      #     mkdir memory
-      #     python main.py --test-embed
-      # - name: Upload Build Artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: Chroma VectorDB Embeddings
-      #     path: test_data/
+          python -m pip install -U "huggingface-hub[cli]" hf_transfer
+          huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+          --include *.xml \
+          --local-dir . \
+          --local-dir-use-symlinks False
+        env:
+          HF_HUB_ENABLE_HF_TRANSFER: 1
+      - name: Create Embeddings
+        run: |
+          docker run -v $PWD/sources:/home/user/app/sources \
+          ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }} \
+          bash -c "ollama serve & python3 main.py --test-embed"
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: Chroma VectorDB Embeddings
+          path: test_data/

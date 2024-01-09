@@ -3,7 +3,8 @@ import pytest
 import torch
 from main import MultiWiki, create_chain
 
-torch.set_num_threads(22)
+if not torch.cuda.is_available():
+    torch.set_num_threads(torch.get_num_threads() * 2)
 
 wiki = MultiWiki()
 
@@ -33,6 +34,7 @@ def test_multiwiki():
 def test_multiwiki_set_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--no-embed", dest="embed", action="store_false")
+    parser.add_argument("--test-embed", dest="test_embed", action="store_true")
     wiki.set_args(parser.parse_args([]))
     print(wiki.args)
     assert wiki.args.embed is True

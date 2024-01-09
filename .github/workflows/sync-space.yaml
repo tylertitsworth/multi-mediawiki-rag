@@ -1,5 +1,6 @@
 ---
 name: Sync Space
+permissions: read-all
 on:
   push:
     branches:
@@ -24,6 +25,7 @@ jobs:
         files=$(git diff --name-only HEAD HEAD~1)
         upload_files() {
           local file=$1
+          [ "$file" == "README.md" ] && \
           huggingface-cli upload --repo-type space TotalSundae/dungeons-and-dragons $file $file
         }
         for file in $files; do

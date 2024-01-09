@@ -1,12 +1,13 @@
 ---
 name: Unit Tests
+permissions: read-all
 on:
   pull_request:
     branches:
       - main
 
 jobs:
-  unit-test:
+  pytest:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -16,5 +17,3 @@ jobs:
         python -m pip install -r requirements.txt
     - name: Basic Unit Test
       run: pytest test/test.py -W ignore::DeprecationWarning
-      env:
-        PYTHONPATH: test

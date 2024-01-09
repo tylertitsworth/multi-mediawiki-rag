@@ -1,25 +1,17 @@
----
-license: mit
-pinned: true
-sdk: docker
-title: Multi Mediawiki RAG
----
-# Multi Mediawiki RAG Chatbot
+# Multi Mediawiki RAG Chatbot [![forks - multi-mediawiki-rag](https://img.shields.io/github/forks/tylertitsworth/multi-mediawiki-rag?style=social)](https://github.com/tylertitsworth/multi-mediawiki-rag) [![stars - multi-mediawiki-rag](https://img.shields.io/github/stars/tylertitsworth/multi-mediawiki-rag?style=social)](https://github.com/tylertitsworth/multi-mediawiki-rag)
 
-[![GitHub tag](https://img.shields.io/github/tag/tylertitsworth/multi-mediawiki-rag?include_prereleases=&sort=semver&color=blue)](https://github.com/tylertitsworth/multi-mediawiki-rag/releases/)
+[![OS - Linux](https://img.shields.io/badge/OS-Linux-blue?logo=linux&logoColor=white)](https://www.linux.org/ "Go to Linux homepage")
+[![Made with Python](https://img.shields.io/badge/Python->=3.10-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
+[![contributions - welcome](https://img.shields.io/badge/contributions-welcome-2ea44f)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
 [![issues - multi-mediawiki-rag](https://img.shields.io/github/issues/tylertitsworth/multi-mediawiki-rag)](https://github.com/tylertitsworth/multi-mediawiki-rag/issues)
-[![License](https://img.shields.io/badge/License-MIT-blue)](#license)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8272/badge)](https://www.bestpractices.dev/projects/8272)
-[![PRs - Welcome](https://img.shields.io/badge/PRs-Welcome-2ea44f)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
 [![Unit Tests](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/Unit%20Tests/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions?query=workflow:"Unit+Tests")
-[![forks - multi-mediawiki-rag](https://img.shields.io/github/forks/tylertitsworth/multi-mediawiki-rag?style=social)](https://github.com/tylertitsworth/multi-mediawiki-rag)
-[![stars - multi-mediawiki-rag](https://img.shields.io/github/stars/tylertitsworth/multi-mediawiki-rag?style=social)](https://github.com/tylertitsworth/multi-mediawiki-rag)
 
 [Chatbots](https://www.forbes.com/advisor/business/software/what-is-a-chatbot/) are very popular right now. Most openly accessible information is stored in some kind of a [Mediawiki](https://en.wikipedia.org/wiki/MediaWiki). Creating a [RAG](https://research.ibm.com/blog/retrieval-augmented-generation-RAG) Chatbot is becoming a very powerful alternative to traditional data gathering. This project is designed to create a basic format for creating your own chatbot to run locally on linux.
 
 ## Table of Contents
 
-- [Multi Mediawiki RAG Chatbot](#multi-mediawiki-rag-chatbot)
+- [Multi Mediawiki RAG Chatbot  ](#multi-mediawiki-rag-chatbot--)
   - [Table of Contents](#table-of-contents)
   - [About](#about)
     - [Architecture](#architecture)
@@ -62,7 +54,7 @@ graph TD;
 
 ### Filesystem
 
-```text
+```txt
 multi-mediawiki-rag
 ├── .chainlit
 │   ├── .langchain.db # Server Cache
@@ -99,15 +91,16 @@ These instructions will get you a copy of the project up and running on your loc
 
 These steps assume you are using a modern Linux OS like Ubuntu with Python 3.10+.
 
-1. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics` or using a tool like [wikiteam3](https://pypi.org/project/wikiteam3/)
+1. Install [sqlite3](https://www.sqlite.org/index.html)
+2. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics` or using a tool like [wikiteam3](https://pypi.org/project/wikiteam3/)
     1. If Downloading, download only the current pages, not the entire history
     2. If using `wikiteam3`, scrape only namespace 0
     3. Provide in the following format: `sources/<wikiname>_pages_current.xml`
-2. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`
+3. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`
    1. Follow the manual setup instructions to set up Ollama as a systemd service
-3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration information
-4. Create a directory to store chat history with `mkdir memory`
-5. Install python requirements:
+4. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration information
+5. Create a directory to store chat history with `mkdir memory`
+6. Install python requirements:
 
 ```bash
 pip install -U pip setuptools wheel
@@ -140,7 +133,7 @@ python main.py
 
 #### Expected Output
 
-```text
+```txt
 2023-12-16 09:50:53 - Loaded .env file
 2023-12-16 09:50:55 - Load pretrained SentenceTransformer: sentence-transformers/all-mpnet-base-v2
 2023-12-16 09:51:18 - Use pytorch device: cpu
@@ -165,7 +158,7 @@ within Kara-Tur.
 Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
 ```py
-# main.py#L78-L99
+# main.py#L82-L103
 
 Document = namedtuple("Document", ["page_content", "metadata"])
 merged_documents = []
@@ -193,7 +186,7 @@ for dump in wiki.mediawikis:
 
 Insert a new loader
 
-```python
+```py
 from langchain.document_loaders import TextLoader
 myloader = TextLoader("./mydocument.md")
 merged_documents.append({"mydocument": myloader.load()})

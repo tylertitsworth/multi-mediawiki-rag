@@ -3,7 +3,8 @@ FROM ollama/ollama
 RUN apt-get update -y && apt-get install -y --no-install-recommends --fix-missing \
     git \
     python3 \
-    python3-pip
+    python3-pip \
+    sqlite3
 
 RUN useradd -m -u 1000 user
 USER user

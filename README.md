@@ -158,7 +158,7 @@ within Kara-Tur.
 Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
 ```py
-# main.py#L82-L103
+# main.py#L83-L104
 
 Document = namedtuple("Document", ["page_content", "metadata"])
 merged_documents = []

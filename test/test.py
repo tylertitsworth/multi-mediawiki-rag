@@ -62,13 +62,3 @@ def test_create_chain():
     res = chain(wiki.question)
     assert res["answer"] != ""
     assert res["source_documents"] != []
-
-
-# @pytest.mark.ollama
-# async def test_update_cl():
-#     await update_cl(None)
-
-
-# @pytest.mark.ollama
-# async def test_on_message():
-#

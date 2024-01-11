@@ -30,6 +30,8 @@ jobs:
         curl https://ollama.ai/install.sh | sh
         sleep 5
         ollama create volo -f ./Modelfile
+    - name: Create Memory Folder
+      run: mkdir memory
     - name: Basic Unit Test
       run: pytest test/test.py -W ignore::DeprecationWarning --ollama
   cypress:
@@ -53,6 +55,8 @@ jobs:
           curl https://ollama.ai/install.sh | sh
           sleep 5
           ollama create volo -f ./Modelfile
+      - name: Create Memory Folder
+        run: mkdir memory
       - uses: actions/setup-node@v1
         with:
           node-version: 16

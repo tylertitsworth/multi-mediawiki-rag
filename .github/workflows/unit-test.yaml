@@ -17,3 +17,15 @@ jobs:
         python -m pip install -r requirements.txt
     - name: Basic Unit Test
       run: pytest test/test.py -W ignore::DeprecationWarning
+  cypress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: cypress-io/github-action@v6
+        with:
+          start: npx ts-node cypress/run.ts
+          wait-on: 'http://localhost:8000'
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secret.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}

@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "lib": [
+            "ESNext",
+            "dom"
+        ],
+        "types": [
+            "cypress",
+            "node"
+        ]
+    },
+    "include": [
+        "e2e/**/*.ts"
+    ]
+}

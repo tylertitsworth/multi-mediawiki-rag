@@ -5,9 +5,10 @@
 .venv
 .vscode
 chainlit.md
+cypress/screenshots
 data
 memory
 model
+node_modules
 package-lock.json
-package.json
 sources

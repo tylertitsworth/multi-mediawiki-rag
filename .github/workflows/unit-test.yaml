@@ -23,6 +23,11 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Python Requirements
         run: python -m pip install -r requirements.txt
+      - name: Setup Ollama
+        run: |
+          curl https://ollama.ai/install.sh | sh
+          sleep 5
+          ollama create volo -f ./Modelfile
       - uses: actions/setup-node@v1
         with:
           node-version: 16

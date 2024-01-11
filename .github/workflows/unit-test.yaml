@@ -43,12 +43,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16
-      - name: Install
-        run: npm install
       - name: Start Chainlit Server
         run: |
           chainlit run main.py -h -c &
-          sleep 10
+          sleep 5
       - uses: cypress-io/github-action@v6
         with:
           config-file: ${{ github.workspace }}/cypress/cypress.config.ts

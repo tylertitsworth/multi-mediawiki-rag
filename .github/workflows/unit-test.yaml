@@ -23,11 +23,22 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Python Requirements
         run: python -m pip install -r requirements.txt
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install Node Requirements
+        run: npm install
       - uses: cypress-io/github-action@v6
         with:
+          config-file: ${{ github.workspace }}/cypress/cypress.config.ts
+          record: true
           start: npx ts-node cypress/run.ts
           wait-on: 'http://localhost:8000'
-          record: true
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: Screenshot
+          path: ${{ github.workspace }}/cypress/screenshots/

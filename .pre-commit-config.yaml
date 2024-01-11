@@ -41,7 +41,7 @@ repos:
         args: ["test/test.py", "-W", "ignore::DeprecationWarning", "--ollama"]
       - id: cypress
         name: cypress
-        entry: npx
+        entry: bash
         language: system
         types_or: [ts, python]
-        args: ["ts-node", "cypress/main.ts"]
+        args: ["cypress/test.sh"]

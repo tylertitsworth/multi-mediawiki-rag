@@ -214,7 +214,7 @@ pytest test/test.py -W ignore::DeprecationWarning --ollama
 # Test Chainlit with Cypress
 npm install
 # Run Test Suite
-npx ts-node cypress/main.ts
+bash cypress/test.sh
 ```
 
 ## License

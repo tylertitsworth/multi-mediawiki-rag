@@ -1,12 +1,9 @@
-describe('Customize chat settings', () => {
+describe('set_chat_settings', () => {
     before(() => {
         cy.visit('/');
     });
 
     it('should update inputs', () => {
-        // Initialize new chat
-        cy.get('#new-chat-button').click();
-        cy.contains('Confirm').click();
 
         // Open chat settings modal
         cy.get('#chat-settings-open-modal').should('exist');

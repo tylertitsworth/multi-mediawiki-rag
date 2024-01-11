@@ -56,6 +56,7 @@ def test_set_chat_settings():
     assert wiki.top_k == init_settings["top_k"] + 1
     assert wiki.top_p == init_settings["top_p"] + 1
 
+
 @pytest.mark.ollama
 def test_create_chain():
     chain = create_chain()

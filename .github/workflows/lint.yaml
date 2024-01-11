@@ -18,7 +18,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Super-linter
         uses: super-linter/super-linter/slim@v5.7.2  # x-release-please-version
         env:
@@ -26,7 +25,7 @@ jobs:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_ACTIONS_COMMAND_ARGS: '-ignore SC.*'
-          TYPESCRIPT_STANDARD_TSCONFIG_FILE: ${DEFAULT_WORKSPACE}/cypress/tsconfig.json
+          TYPESCRIPT_STANDARD_TSCONFIG_FILE: ${{ github.workspace }}/cypress/tsconfig.json
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
           VALIDATE_PYTHON_MYPY: false

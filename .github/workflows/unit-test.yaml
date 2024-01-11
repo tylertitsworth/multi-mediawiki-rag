@@ -20,7 +20,7 @@ jobs:
         python -m pip install -U "huggingface-hub[cli]" hf_transfer
         huggingface-cli login --token ${{ secrets.HF_TOKEN }}
         huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-        --include *.xml \
+        --include data/* \
         --local-dir . \
         --local-dir-use-symlinks False
       env:
@@ -45,7 +45,7 @@ jobs:
           python -m pip install -U "huggingface-hub[cli]" hf_transfer
           huggingface-cli login --token ${{ secrets.HF_TOKEN }}
           huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include *.xml \
+          --include data/* \
           --local-dir . \
           --local-dir-use-symlinks False
         env:
@@ -71,8 +71,3 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
-      - uses: actions/upload-artifact@v3
-        if: ${{ always() }}
-        with:
-          name: Screenshot
-          path: ${{ github.workspace }}/cypress/screenshots/

@@ -43,14 +43,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 16
-      - name: Test
+      - name: Install
+        run: npm install
+      - name: Start Chainlit Server
         run: |
-          npm install
-          bash cypress/test.sh
-      # - uses: cypress-io/github-action@v6
-      #   with:
-      #     config-file: ${{ github.workspace }}/cypress/cypress.config.ts
-      #     record: true
-        # env:
-        #   CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
-        #   GITHUB_TOKEN: ${{ github.token }}
+          chainlit run main.py -h -c &
+          sleep 10
+      - uses: cypress-io/github-action@v6
+        with:
+          config-file: ${{ github.workspace }}/cypress/cypress.config.ts
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}

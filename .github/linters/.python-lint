@@ -1,2 +1,2 @@
 [MESSAGES CONTROL]
-disable=attribute-defined-outside-init, global-variable-not-assigned, global-statement, invalid-name, import-error, line-too-long, missing-class-docstring, missing-function-docstring, missing-module-docstring, no-member, no-name-in-module, protected-access, redefined-builtin, redefined-outer-name, unexpected-keyword-arg
+disable=attribute-defined-outside-init, global-statement, invalid-name, import-error, line-too-long, missing-class-docstring, missing-function-docstring, missing-module-docstring, no-member, no-name-in-module, protected-access, redefined-builtin, redefined-outer-name

@@ -4,12 +4,13 @@
             "ESNext",
             "dom"
         ],
+        "strictNullChecks": true,
         "types": [
             "cypress",
             "node"
         ]
     },
     "include": [
-        "e2e/**/*.ts"
+        "**/*.ts"
     ]
 }

@@ -7,6 +7,10 @@ on:
       - main
     paths:
       - 'main.py'
+      - 'requirements.txt'
+      - 'config.yaml'
+      - 'test/**.py'
+      - 'cypress/**/**.ts'
 
 jobs:
   pytest:

@@ -39,3 +39,9 @@ repos:
         language: system
         types: [python]
         args: ["test/test.py", "-W", "ignore::DeprecationWarning", "--ollama"]
+      - id: cypress
+        name: cypress
+        entry: bash
+        language: system
+        types_or: [ts, python]
+        args: ["cypress/test.sh"]

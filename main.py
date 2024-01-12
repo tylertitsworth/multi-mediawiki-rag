@@ -61,6 +61,7 @@ def set_chat_settings(settings):
     if isinstance(settings, dict):
         for key, val in settings.items():
             setattr(wiki, key, val)
+    return wiki
 
 
 def rename_duplicates(documents):
@@ -157,7 +158,8 @@ def create_chain():
 
 
 async def update_cl(settings):
-    set_chat_settings(settings)
+    global wiki
+    wiki = set_chat_settings(settings)
     chain = create_chain()
     # https://docs.chainlit.io/api-reference/chat-settings
     inputs = [

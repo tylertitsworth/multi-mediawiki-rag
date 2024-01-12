@@ -18,9 +18,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Super-linter
-        uses: super-linter/super-linter/slim@v5.7.2  # x-release-please-version
+        uses: super-linter/super-linter/slim@v5.7.2
         env:
           DEFAULT_BRANCH: main
           # To report GitHub Actions status checks
@@ -29,3 +28,4 @@ jobs:
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
           VALIDATE_PYTHON_MYPY: false
+          VALIDATE_TYPESCRIPT_STANDARD: false

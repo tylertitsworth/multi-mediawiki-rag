@@ -1,7 +1,7 @@
 import argparse
 import pytest
 import torch
-from main import MultiWiki, create_chain
+from main import MultiWiki, create_chain, set_chat_settings
 
 if not torch.cuda.is_available():
     torch.set_num_threads(torch.get_num_threads() * 2)
@@ -38,6 +38,23 @@ def test_multiwiki_set_args():
     wiki.set_args(parser.parse_args([]))
     print(wiki.args)
     assert wiki.args.embed is True
+
+
+def test_set_chat_settings():
+    global wiki
+    init_settings = {
+        setting: wiki.__dict__[setting]
+        for setting in ["repeat_penalty", "temperature", "top_k", "top_p"]
+    }
+    settings = {
+        setting: wiki.__dict__[setting] + 1
+        for setting in ["repeat_penalty", "temperature", "top_k", "top_p"]
+    }
+    wiki = set_chat_settings(settings)
+    assert wiki.repeat_penalty == init_settings["repeat_penalty"] + 1
+    assert wiki.temperature == init_settings["temperature"] + 1
+    assert wiki.top_k == init_settings["top_k"] + 1
+    assert wiki.top_p == init_settings["top_p"] + 1
 
 
 @pytest.mark.ollama

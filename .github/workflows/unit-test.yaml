@@ -17,3 +17,40 @@ jobs:
         python -m pip install -r requirements.txt
     - name: Basic Unit Test
       run: pytest test/test.py -W ignore::DeprecationWarning
+  cypress:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python Requirements
+        run: python -m pip install -r requirements.txt
+      - name: Download Sources
+        run: |
+          python -m pip install -U "huggingface-hub[cli]" hf_transfer
+          huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+          --include data/* \
+          --local-dir . \
+          --local-dir-use-symlinks False
+        env:
+          HF_HUB_ENABLE_HF_TRANSFER: 1
+      - name: Setup Ollama
+        run: |
+          curl https://ollama.ai/install.sh | sh
+          sleep 5
+          ollama create volo -f ./Modelfile
+      - name: Create Memory Folder
+        run: mkdir memory
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 16
+      - name: Start Chainlit Server
+        run: |
+          chainlit run main.py -h -c &
+          sleep 5
+      - uses: cypress-io/github-action@v6
+        with:
+          config-file: ${{ github.workspace }}/cypress/cypress.config.ts
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}

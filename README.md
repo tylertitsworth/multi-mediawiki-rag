@@ -2,10 +2,11 @@
 
 [![OS - Linux](https://img.shields.io/badge/OS-Linux-blue?logo=linux&logoColor=white)](https://www.linux.org/ "Go to Linux homepage")
 [![Made with Python](https://img.shields.io/badge/Python->=3.10-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
+[![Hosted with HF](https://img.shields.io/badge/Hosted_with-Huggingface-yellow)](https://huggingface.co/spaces/TotalSundae/dungeons-and-dragons)
 [![contributions - welcome](https://img.shields.io/badge/contributions-welcome-2ea44f)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
-[![issues - multi-mediawiki-rag](https://img.shields.io/github/issues/tylertitsworth/multi-mediawiki-rag)](https://github.com/tylertitsworth/multi-mediawiki-rag/issues)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8272/badge)](https://www.bestpractices.dev/projects/8272)
 [![pytest](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/Unit%20Tests/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions??branch=main?query=workflow:"Unit+Tests")
+[![codeQL](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/CodeQL/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions??branch=main?query=workflow:"CodeQL")
 
 [Chatbots](https://www.forbes.com/advisor/business/software/what-is-a-chatbot/) are very popular right now. Most openly accessible information is stored in some kind of a [Mediawiki](https://en.wikipedia.org/wiki/MediaWiki). Creating a [RAG](https://research.ibm.com/blog/retrieval-augmented-generation-RAG) Chatbot is becoming a very powerful alternative to traditional data gathering. This project is designed to create a basic format for creating your own chatbot to run locally on linux.
 

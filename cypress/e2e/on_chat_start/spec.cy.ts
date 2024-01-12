@@ -7,5 +7,5 @@ describe('on_chat_start', () => {
     messages.should('have.length', 1)
 
     messages.eq(0).should('contain.text', 'Ah my good fellow!')
-  });
-});
+  })
+})

@@ -4,7 +4,6 @@ describe('set_chat_settings', () => {
   })
 
   it('should update inputs', () => {
-
     // Open chat settings modal
     cy.get('#chat-settings-open-modal').should('exist')
     cy.get('#chat-settings-open-modal').click()

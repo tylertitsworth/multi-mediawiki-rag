@@ -4,6 +4,7 @@
             "ESNext",
             "dom"
         ],
+        "strictNullChecks": true,
         "types": [
             "cypress",
             "node"

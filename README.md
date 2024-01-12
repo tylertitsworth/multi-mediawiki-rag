@@ -2,11 +2,10 @@
 
 [![OS - Linux](https://img.shields.io/badge/OS-Linux-blue?logo=linux&logoColor=white)](https://www.linux.org/ "Go to Linux homepage")
 [![Made with Python](https://img.shields.io/badge/Python->=3.10-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
-[![Hosted with HF](https://img.shields.io/badge/Hosted_with-Huggingface-yellow)](https://huggingface.co/spaces/TotalSundae/dungeons-and-dragons)
 [![contributions - welcome](https://img.shields.io/badge/contributions-welcome-2ea44f)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
+[![issues - multi-mediawiki-rag](https://img.shields.io/github/issues/tylertitsworth/multi-mediawiki-rag)](https://github.com/tylertitsworth/multi-mediawiki-rag/issues)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8272/badge)](https://www.bestpractices.dev/projects/8272)
 [![pytest](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/Unit%20Tests/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions??branch=main?query=workflow:"Unit+Tests")
-[![codeQL](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/CodeQL/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions??branch=main?query=workflow:"CodeQL")
 
 [Chatbots](https://www.forbes.com/advisor/business/software/what-is-a-chatbot/) are very popular right now. Most openly accessible information is stored in some kind of a [Mediawiki](https://en.wikipedia.org/wiki/MediaWiki). Creating a [RAG](https://research.ibm.com/blog/retrieval-augmented-generation-RAG) Chatbot is becoming a very powerful alternative to traditional data gathering. This project is designed to create a basic format for creating your own chatbot to run locally on linux.
 
@@ -16,16 +15,18 @@
   - [Table of Contents](#table-of-contents)
   - [About](#about)
     - [Architecture](#architecture)
-    - [Filesystem](#filesystem)
+    - [Runtime Filesystem](#runtime-filesystem)
   - [Quickstart](#quickstart)
     - [Prerequisites](#prerequisites)
     - [Create Custom LLM](#create-custom-llm)
       - [Use Model from Huggingface](#use-model-from-huggingface)
     - [Create Vector Database](#create-vector-database)
       - [Expected Output](#expected-output)
-      - [Add Different Data to DB](#add-different-data-to-db)
+      - [Add Different Document Type to DB](#add-different-document-type-to-db)
     - [Start Chatbot](#start-chatbot)
-    - [Unit Testing](#unit-testing)
+  - [Testing](#testing)
+    - [Cypress](#cypress)
+    - [Pytest](#pytest)
   - [License](#license)
 
 ## About
@@ -53,16 +54,13 @@ graph TD;
     click Ollama href "https://github.com/jmorganca/ollama"
 ```
 
-### Filesystem
+### Runtime Filesystem
 
 ```txt
 multi-mediawiki-rag
 ├── .chainlit
 │   ├── .langchain.db # Server Cache
 │   └── config.toml # Server Config
-├── .env
-├── Dockerfile
-├── Modelfile
 ├── chainlit.md
 ├── config.yaml
 ├── data # VectorDB
@@ -72,16 +70,9 @@ multi-mediawiki-rag
 ├── main.py
 ├── memory
 │   └── cache.db # Chat Cache
-├── model
-│   ├── <modelname>
-│   │   ├── q4_0.bin
-│   │   └── *
-│   └── sentence-transformers_all-mpnet-base-v2
-│       └── *
-├── requirements.txt
-└── sources
-    ├── <wikiname>_pages_current.xml
-    └── *
+└── model
+    └── sentence-transformers_all-mpnet-base-v2
+        └── *
 ```
 
 ## Quickstart
@@ -90,23 +81,28 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-These steps assume you are using a modern Linux OS like Ubuntu with Python 3.10+.
+These steps assume you are using a modern Linux OS like [Ubuntu 22.04](https://www.releases.ubuntu.com/jammy/) with [Python 3.10+](https://www.python.org/downloads/release/python-3100/).
 
-1. Install [sqlite3](https://www.sqlite.org/index.html)
+```bash
+apt-get install -y curl git python3-venv sqlite3
+git clone https://github.com/tylertitsworth/multi-mediawiki-rag.git
+curl https://ollama.ai/install.sh | sh
+python -m .venv venv
+source .venv/bin/activate
+pip install -U pip setuptools wheel
+pip install -r requirements.txt
+mkdir memory
+```
+
+1. Run the above setup steps
 2. Download a mediawiki's XML dump by browsing to `/wiki/Special:Statistics` or using a tool like [wikiteam3](https://pypi.org/project/wikiteam3/)
     1. If Downloading, download only the current pages, not the entire history
     2. If using `wikiteam3`, scrape only namespace 0
     3. Provide in the following format: `sources/<wikiname>_pages_current.xml`
-3. Install [Ollama](https://github.com/jmorganca/ollama) with `curl https://ollama.ai/install.sh | sh`
-   1. Follow the manual setup instructions to set up Ollama as a systemd service
-4. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration information
-5. Create a directory to store chat history with `mkdir memory`
-6. Install python requirements:
+3. Edit [`config.yaml`](config.yaml) with the location of your XML mediawiki data you downloaded in step 1 and other configuration information
 
-```bash
-pip install -U pip setuptools wheel
-pip install -r requirements.txt
-```
+> [!CAUTION]
+> Installing [Ollama](https://github.com/jmorganca/ollama) will create a new user and a service on your system. Follow the [manual installation steps](https://github.com/jmorganca/ollama/blob/main/docs/linux.md#manual-install) to avoid this step and instead launch the ollama API using `ollama serve`.
 
 ### Create Custom LLM
 
@@ -115,6 +111,9 @@ After installing Ollama we can use a [Modelfile](https://github.com/jmorganca/ol
 ```bash
 ollama create volo -f ./Modelfile
 ```
+
+> [!TIP]
+> Choose a model from the [Ollama model library](https://ollama.ai/library) and download with `ollama pull <modelname>:<version>`, then edit the `model` field in [`config.yaml`](config.yaml) with the same information.
 
 #### Use Model from Huggingface
 
@@ -129,8 +128,6 @@ Your XML data needs to be loaded and transformed into embeddings to create a [Ch
 ```bash
 python main.py
 ```
-
->**Note:** Use an existing vectorDB by adding `--no-embed`
 
 #### Expected Output
 
@@ -154,7 +151,7 @@ lobsters, oysters, and shellfish, while their ink was highly sought after for us
 within Kara-Tur.
 ```
 
-#### Add Different Data to DB
+#### Add Different Document Type to DB
 
 Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
@@ -203,18 +200,31 @@ chainlit run main.py -w -h
 
 Access the Chatbot GUI at `http://localhost:8000`.
 
-### Unit Testing
+## Testing
+
+### Cypress
+
+[Cypress](https://www.cypress.io/) tests modern web applications with visual debugging. It is used to test the [Chainlit](https://github.com/Chainlit/chainlit) UI functionality.
+
+```bash
+npm install
+# Run Test Suite
+bash cypress/test.sh
+```
+
+> [!NOTE]
+> Cypress requires `node >= 16`.
+
+### Pytest
+
+[Pytest](https://docs.pytest.org/en/7.4.x/) is a mature full-featured Python testing tool that helps you write better programs.
 
 ```bash
 pip install pytest
 # Basic Testing
 pytest test/test.py -W ignore::DeprecationWarning
-# With Ollama Model Backend
+# With Ollama API Backend for E2E Test
 pytest test/test.py -W ignore::DeprecationWarning --ollama
-# Test Chainlit with Cypress
-npm install
-# Run Test Suite
-bash cypress/test.sh
 ```
 
 ## License

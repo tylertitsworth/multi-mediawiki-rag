@@ -25,8 +25,8 @@ jobs:
         files=$(git diff --name-only HEAD HEAD~1)
         upload_files() {
             local file=$1
-            [ "$file" != "README.md" || "$file" != ".gitignore" ] && \
-            huggingface-cli upload --repo-type space TotalSundae/dungeons-and-dragons $file $file &
+            [ "$file" != "README.md" ] || [ "$file" != ".gitignore" ] && \
+            huggingface-cli upload --repo-type space TotalSundae/dungeons-and-dragons $file $file
         }
         for file in $files; do
             upload_files $file

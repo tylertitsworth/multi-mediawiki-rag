@@ -1,4 +1,4 @@
-FROM ollama/ollama:0.1.19
+FROM ollama/ollama
 
 RUN apt-get update -y && apt-get install -y --no-install-recommends --fix-missing \
     git \

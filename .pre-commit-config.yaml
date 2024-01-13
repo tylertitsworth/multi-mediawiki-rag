@@ -3,10 +3,15 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
+    - id: check-added-large-files
+    - id: check-ast
+    - id: check-merge-conflict
     - id: check-yaml
     - id: debug-statements
     - id: end-of-file-fixer
     - id: forbid-submodules
+    - id: name-tests-test
+      args: ['--django']
     - id: sort-simple-yaml
       files: config.yaml
     - id: trailing-whitespace

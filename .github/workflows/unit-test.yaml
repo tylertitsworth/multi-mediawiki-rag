@@ -9,7 +9,7 @@ on:
     branches:
       - main
     paths:
-      - 'main.py'
+      - '**.py'
       - 'requirements.txt'
       - 'config.yaml'
       - 'test/**.py'
@@ -25,7 +25,7 @@ jobs:
         python -m pip install pytest
         python -m pip install -r requirements.txt
     - name: Basic Unit Test
-      run: pytest test/test.py -W ignore::DeprecationWarning
+      run: pytest test/test_embed.py -W ignore::DeprecationWarning
   cypress:
     runs-on: ubuntu-latest
     steps:
@@ -47,14 +47,12 @@ jobs:
           curl https://ollama.ai/install.sh | sh
           sleep 5
           ollama create volo -f ./Modelfile
-      - name: Create Memory Folder
-        run: mkdir memory
       - uses: actions/setup-node@v4
         with:
           node-version: 16
       - name: Start Chainlit Server
         run: |
-          chainlit run main.py -h -c &
+          chainlit run app.py -h -c &
           sleep 5
       - uses: cypress-io/github-action@v6
         with:

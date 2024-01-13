@@ -23,6 +23,7 @@ jobs:
         HF_HUB_ENABLE_HF_TRANSFER: 1
       run: |
         files=$(git diff --name-only HEAD HEAD~1)
+        deleted_files=$(git diff --name-only --diff-filter=D HEAD HEAD~1)
         upload_files() {
             local file=$1
             if [ "$file" != "README.md" ] && [ "$file" != ".gitignore" ]; then
@@ -30,5 +31,9 @@ jobs:
             fi
         }
         for file in $files; do
-            upload_files $file
+            if [[ ! " ${deleted_files[@]} " =~ " ${file} " ]]; then
+                upload_files $file
+            else
+                echo "File $file needs to be deleted"
+            fi
         done

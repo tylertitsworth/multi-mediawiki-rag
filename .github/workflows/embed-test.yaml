@@ -40,7 +40,7 @@ jobs:
           python -m pip install -U "huggingface-hub[cli]" hf_transfer
           huggingface-cli login --token ${{ secrets.HF_TOKEN }}
           huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include *.xml \
+          --include dnd5e_pages_current.xml \
           --local-dir . \
           --local-dir-use-symlinks False
         env:
@@ -52,7 +52,7 @@ jobs:
           -v $PWD/data:/home/user/app/test_data \
           -v $PWD/sources:/home/user/app/sources \
           ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }} \
-          bash -c "ollama serve & python3 main.py --test-embed"
+          bash -c "ollama serve & pytest test -W ignore::DeprecationWarning"
       - uses: actions/upload-artifact@v4
         with:
           name: Chroma VectorDB Embeddings

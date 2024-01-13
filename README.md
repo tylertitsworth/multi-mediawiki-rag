@@ -2,8 +2,8 @@
 
 [![OS - Linux](https://img.shields.io/badge/OS-Linux-blue?logo=linux&logoColor=white)](https://www.linux.org/ "Go to Linux homepage")
 [![Made with Python](https://img.shields.io/badge/Python->=3.10-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
-[![contributions - welcome](https://img.shields.io/badge/contributions-welcome-2ea44f)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
-[![issues - multi-mediawiki-rag](https://img.shields.io/github/issues/tylertitsworth/multi-mediawiki-rag)](https://github.com/tylertitsworth/multi-mediawiki-rag/issues)
+[![Hosted on - Huggingface](https://img.shields.io/static/v1?label=Hosted+on&message=Huggingface&color=FFD21E)](https://huggingface.co/spaces/TotalSundae/dungeons-and-dragons)
+[![contributions - welcome](https://img.shields.io/badge/contributions-welcome-4ac41d)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8272/badge)](https://www.bestpractices.dev/projects/8272)
 [![pytest](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/Unit%20Tests/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions??branch=main?query=workflow:"Unit+Tests")
 

@@ -200,6 +200,8 @@ chainlit run main.py -w -h
 
 Access the Chatbot GUI at `http://localhost:8000`.
 
+[![Chainlit GUI Screenshot](https://cdn.discordapp.com/attachments/897598549674582086/1195523757595443291/app_screenshot.png?ex=65b44d43&is=65a1d843&hm=55cde36846612a388f9336f700597f206927130ca51d09a41334a1392b2eef89&)](https://totalsundae-dungeons-and-dragons.hf.space/)
+
 ## Testing
 
 ### Cypress

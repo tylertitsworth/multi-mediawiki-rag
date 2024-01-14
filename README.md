@@ -67,7 +67,8 @@ multi-mediawiki-rag
 │   ├── 47e4e036-****-****-****-************
 │   │   └── *
 │   └── chroma.sqlite3
-├── main.py
+├── app.py
+├── embed.py
 ├── memory
 │   └── cache.db # Chat Cache
 └── model
@@ -91,7 +92,6 @@ python -m .venv venv
 source .venv/bin/activate
 pip install -U pip setuptools wheel
 pip install -r requirements.txt
-mkdir memory
 ```
 
 1. Run the above setup steps
@@ -126,7 +126,7 @@ ollama create volo -f ./Modelfile
 Your XML data needs to be loaded and transformed into embeddings to create a [Chroma](https://python.langchain.com/docs/integrations/vectorstores/chroma) VectorDB.
 
 ```bash
-python main.py
+python embed.py
 ```
 
 #### Expected Output
@@ -156,38 +156,11 @@ within Kara-Tur.
 Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
 
 ```py
-# main.py#L83-L104
-
-Document = namedtuple("Document", ["page_content", "metadata"])
-merged_documents = []
-
-for dump in wiki.mediawikis:
-    # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
-    loader = MWDumpLoader(
-        encoding="utf-8",
-        file_path=f"{wiki.source}/{dump}_pages_current.xml",
-        # https://www.mediawiki.org/wiki/Help:Namespaces
-        namespaces=[0],
-        skip_redirects=True,
-        stop_on_error=False,
-    )
-    # For each Document provided:
-    # Modify the source metadata by accounting for duplicates (<name>_n)
-    # And add the mediawiki title (<name>_n - <wikiname>)
-    merged_documents.extend(
-        Document(
-            doc.page_content, {"source": doc.metadata["source"] + f" - {dump}"}
-        )
-        for doc in rename_duplicates(loader.load())
-    )
-```
-
-Insert a new loader
-
-```py
+print("Loading Documents")
+documents = load_documents(config)
+# Insert a new loader
 from langchain.document_loaders import TextLoader
-myloader = TextLoader("./mydocument.md")
-merged_documents.append({"mydocument": myloader.load()})
+documents.append({"mydocument": TextLoader("./mydocument.md").load()})
 ```
 
 [Re-embed](#create-vector-database) to include the new data for retrieval.
@@ -195,7 +168,7 @@ merged_documents.append({"mydocument": myloader.load()})
 ### Start Chatbot
 
 ```bash
-chainlit run main.py -w -h
+chainlit run app.py -h
 ```
 
 Access the Chatbot GUI at `http://localhost:8000`.
@@ -223,10 +196,10 @@ bash cypress/test.sh
 
 ```bash
 pip install pytest
-# Basic Testing
-pytest test/test.py -W ignore::DeprecationWarning
-# With Ollama API Backend for E2E Test
-pytest test/test.py -W ignore::DeprecationWarning --ollama
+# Test Embedding Functions
+pytest test/test_embed.py -W ignore::DeprecationWarning
+# Test e2e with Ollama Backend
+pytest test -W ignore::DeprecationWarning
 ```
 
 ## License

@@ -3,6 +3,9 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
+    - id: check-added-large-files
+    - id: check-ast
+    - id: check-merge-conflict
     - id: check-yaml
     - id: debug-statements
     - id: end-of-file-fixer
@@ -22,11 +25,6 @@ repos:
       args: ["--config", ".github/linters/.markdown-lint.yaml"]
   - repo: local
     hooks:
-      - id: embedme
-        name: embedme
-        entry: npx
-        language: system
-        args: ["embedme", "--verify", "README.md"]
       - id: pylint
         name: pylint
         entry: pylint
@@ -38,7 +36,7 @@ repos:
         entry: pytest
         language: system
         types: [python]
-        args: ["test/test.py", "-W", "ignore::DeprecationWarning", "--ollama"]
+        args: ["test", "-W", "ignore::DeprecationWarning"]
       - id: cypress
         name: cypress
         entry: bash

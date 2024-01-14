@@ -1,6 +1,7 @@
 **__pycache__**
 .chainlit
 .env
+.files
 .pytest_cache/
 .venv
 .vscode
@@ -11,3 +12,4 @@ memory
 model
 node_modules
 sources
+test_data

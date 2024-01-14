@@ -2,8 +2,8 @@
 
 [![OS - Linux](https://img.shields.io/badge/OS-Linux-blue?logo=linux&logoColor=white)](https://www.linux.org/ "Go to Linux homepage")
 [![Made with Python](https://img.shields.io/badge/Python->=3.10-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
-[![contributions - welcome](https://img.shields.io/badge/contributions-welcome-2ea44f)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
-[![issues - multi-mediawiki-rag](https://img.shields.io/github/issues/tylertitsworth/multi-mediawiki-rag)](https://github.com/tylertitsworth/multi-mediawiki-rag/issues)
+[![Hosted on - Huggingface](https://img.shields.io/static/v1?label=Hosted+on&message=Huggingface&color=FFD21E)](https://huggingface.co/spaces/TotalSundae/dungeons-and-dragons)
+[![contributions - welcome](https://img.shields.io/badge/contributions-welcome-4ac41d)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8272/badge)](https://www.bestpractices.dev/projects/8272)
 [![pytest](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/Unit%20Tests/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions??branch=main?query=workflow:"Unit+Tests")
 
@@ -172,6 +172,8 @@ chainlit run app.py -h
 ```
 
 Access the Chatbot GUI at `http://localhost:8000`.
+
+[![Chainlit GUI Screenshot](https://cdn.discordapp.com/attachments/897598549674582086/1195523757595443291/app_screenshot.png?ex=65b44d43&is=65a1d843&hm=55cde36846612a388f9336f700597f206927130ca51d09a41334a1392b2eef89&)](https://totalsundae-dungeons-and-dragons.hf.space/)
 
 ## Testing
 

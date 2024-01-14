@@ -153,17 +153,7 @@ within Kara-Tur.
 
 #### Add Different Document Type to DB
 
-Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/) and include those files in your VectorDB.
-
-```py
-print("Loading Documents")
-documents = load_documents(config)
-# Insert a new loader
-from langchain.document_loaders import TextLoader
-documents.append({"mydocument": TextLoader("./mydocument.md").load()})
-```
-
-[Re-embed](#create-vector-database) to include the new data for retrieval.
+Choose a new [File type Document Loader](https://python.langchain.com/docs/modules/data_connection/document_loaders/) or [App Document Loader](https://python.langchain.com/docs/integrations/document_loaders/), and add them using your own script. Check out the provided [Example](examples/add_more_docs.py).
 
 ### Start Chatbot
 

@@ -16,6 +16,11 @@ from embed import load_config
 
 
 def setup_memory():
+    """Setup memory for the memory of the chat.
+
+    Returns:
+        ConversationBufferMemory: buffer for storing conversation memory
+    """
     Path("memory").mkdir(parents=True, exist_ok=True)
     # https://python.langchain.com/docs/modules/memory/chat_messages/
     message_history = ChatMessageHistory()
@@ -33,6 +38,14 @@ def setup_memory():
 
 
 def import_db(config):
+    """Use existing Chroma vectorDB
+
+    Args:
+        config (dict): items in config.yaml
+
+    Returns:
+        Chroma: initialize a Chroma client.
+    """
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub
     embeddings = HuggingFaceEmbeddings(
         cache_folder="./model",
@@ -46,6 +59,14 @@ def import_db(config):
 
 
 def create_chain(config):
+    """Creates a conversation chain from a config file.
+
+    Args:
+        config (dict): items in config.yaml
+
+    Returns:
+        BaseConversationalRetrievalChain: chain for having a conversation based on retrieved documents
+    """
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     memory = setup_memory()
     vectordb = import_db(config)
@@ -74,6 +95,12 @@ def create_chain(config):
 
 
 async def update_cl(config, settings):
+    """Update the model configuration.
+
+    Args:
+        config (dict): items in config.yaml
+        settings (dict): user chat settings input
+    """
     if settings:
         config["settings"] = settings
     chain = create_chain(config)
@@ -141,6 +168,8 @@ async def update_cl(config, settings):
 # https://docs.chainlit.io/examples/qa
 @cl.on_chat_start
 async def on_chat_start():
+    """Send a chat start message to the chat and load the model config.
+    """
     config = load_config()
     cl.user_session.set("config", config)
     await update_cl(config, None)
@@ -150,6 +179,11 @@ async def on_chat_start():
 
 @cl.on_message
 async def on_message(message: cl.Message):
+    """Handle a message.
+
+    Args:
+        message (cl.Message): User prompt input
+    """
     chain = cl.user_session.get("chain")
     res = await cl.make_async(chain)(
         message.content,
@@ -177,5 +211,10 @@ async def on_message(message: cl.Message):
 
 @cl.on_settings_update
 async def setup_agent(settings):
+    """Update Chat Settings.
+
+    Args:
+        settings (dict): user chat settings input
+    """
     config = cl.user_session.get("config")
     await update_cl(config, settings)

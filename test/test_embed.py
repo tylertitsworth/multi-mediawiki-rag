@@ -6,6 +6,7 @@ Document = namedtuple("Document", ["page_content", "metadata"])
 
 
 def test_parse_args():
+    "Test parse_args()."
     config = load_config()
     config = parse_args(config, ["--test-embed"])
     assert config["mediawikis"] == ["dnd5e"]
@@ -14,6 +15,7 @@ def test_parse_args():
 
 
 def test_load_config():
+    "Test load_config()."
     with open("config.yaml", "r", encoding="utf-8") as file:
         data = yaml.safe_load(file)
     config = load_config()
@@ -21,6 +23,7 @@ def test_load_config():
 
 
 def test_rename_duplicates():
+    "Test rename_duplicates()."
     documents = [
         Document(page_content="document 1", metadata={"source": "mydoc"}),
         Document(page_content="document 2", metadata={"source": "mydoc"}),
@@ -33,6 +36,7 @@ def test_rename_duplicates():
 
 
 def test_load_documents():
+    "Test load_documents()."
     config = load_config()
     config = parse_args(config, ["--test-embed"])
     documents = load_documents(config)

@@ -22,16 +22,16 @@ def test_import_db():
     config = load_config()
     config = parse_args(config, ["--test-embed"])
     documents = load_documents(config)
-    embeddings = HuggingFaceEmbeddings(
-        model_name=config["embeddings_model"], cache_folder="./model"
-    )
-    vectordb = Chroma.from_documents(
-        documents=documents,
-        embedding=embeddings,
-        persist_directory=config["data_dir"],
-    )
-    vectordb.persist()
-    del vectordb
+    if not Path(config["data_dir"]).is_dir():
+        embeddings = HuggingFaceEmbeddings(
+            model_name=config["embeddings_model"], cache_folder="./model"
+        )
+        vectordb = Chroma.from_documents(
+            documents=documents,
+            embedding=embeddings,
+            persist_directory=config["data_dir"],
+        )
+        vectordb.persist()
     vectordb = import_db(config)
     assert Path("test_data").is_dir()
     assert vectordb.embeddings.model_name == config["embeddings_model"]

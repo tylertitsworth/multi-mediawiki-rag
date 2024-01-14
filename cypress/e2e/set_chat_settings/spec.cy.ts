@@ -15,17 +15,17 @@ describe('set_chat_settings', () => {
     cy.get('#num_sources').clear().type('5')
     cy.get('#num_sources').should('have.value', '5')
 
-    cy.get('#temperature').clear().type(sliderInput)
-    cy.get('#temperature').should('have.value', '0.5')
+    cy.get('#temperature').type(sliderInput)
+    cy.get('#temperature').should('have.value', '0.9')
 
-    cy.get('#repeat_penalty').clear().type(sliderInput)
-    cy.get('#repeat_penalty').should('have.value', '0.9')
+    cy.get('#repeat_penalty').type(sliderInput)
+    cy.get('#repeat_penalty').should('have.value', '1.8')
 
-    cy.get('#top_k').clear().type(sliderInput)
-    cy.get('#top_k').should('have.value', '5')
+    cy.get('#top_k').type(sliderInput)
+    cy.get('#top_k').should('have.value', '25')
 
-    cy.get('#top_p').clear().type(sliderInput)
-    cy.get('#top_p').should('have.value', '0.5')
+    cy.get('#top_p').type(sliderInput)
+    cy.get('#top_p').should('have.value', '0.40')
 
     cy.contains('Confirm').click()
 

@@ -5,7 +5,6 @@ from embed import parse_args, load_config, rename_duplicates, load_documents
 Document = namedtuple("Document", ["page_content", "metadata"])
 
 
-
 def test_parse_args():
     config = load_config()
     config = parse_args(config, ["--test-embed"])

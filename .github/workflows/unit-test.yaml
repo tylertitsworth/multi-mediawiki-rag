@@ -24,6 +24,16 @@ jobs:
       run: |
         python -m pip install pytest
         python -m pip install -r requirements.txt
+    - name: Download Sources
+      run: |
+        python -m pip install -U "huggingface-hub[cli]" hf_transfer
+        huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+        huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+        --include dnd5e_pages_current.xml \
+        --local-dir . \
+        --local-dir-use-symlinks False
+      env:
+        HF_HUB_ENABLE_HF_TRANSFER: 1
     - name: Basic Unit Test
       run: pytest test/test_embed.py -W ignore::DeprecationWarning
   cypress:

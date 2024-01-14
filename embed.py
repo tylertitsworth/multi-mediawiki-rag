@@ -14,6 +14,15 @@ if not torch.cuda.is_available():
 
 
 def parse_args(config, args):
+    """Parses command line arguments.
+
+    Args:
+        config (dict): items in config.yaml
+        args (list(str)): user input parameters
+
+    Returns:
+        dict: dictionary of items in config.yaml, modified by user input parameters
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("--test-embed", dest="test_embed", action="store_true")
     args = parser.parse_args(args)
@@ -26,6 +35,11 @@ def parse_args(config, args):
 
 
 def load_config():
+    """Loads configuration from config.yaml file.
+
+    Returns:
+        dict: items in config.yaml
+    """
     try:
         with open("config.yaml", "r", encoding="utf-8") as file:
             data = yaml.safe_load(file)
@@ -40,6 +54,14 @@ def load_config():
 
 
 def rename_duplicates(documents):
+    """Rename duplicates in a list of documents.
+
+    Args:
+        documents (list(Document)): input documents via loader.load()
+
+    Returns:
+        list(Document): input documents with modified source metadata
+    """
     document_counts = {}
     for idx, doc in enumerate(documents):
         doc_source = doc.metadata["source"]
@@ -53,6 +75,14 @@ def rename_duplicates(documents):
 
 
 def load_documents(config):
+    """Load all the documents in the MediaWiki wiki page.
+
+    Args:
+        config (dict): items in config.yaml
+
+    Returns:
+        list(Document): input documents from mediawikis config with modified source metadata
+    """
     documents = []
     for dump in config["mediawikis"]:
         # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump

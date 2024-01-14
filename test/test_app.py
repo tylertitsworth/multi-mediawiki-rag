@@ -11,6 +11,7 @@ if not torch.cuda.is_available():
 
 
 def test_setup_memory():
+    "Test setup_memory()."
     memory = setup_memory()
     assert Path("memory").is_dir()
     assert memory == ConversationBufferMemory(
@@ -19,6 +20,7 @@ def test_setup_memory():
 
 
 def test_import_db():
+    "Test import_db()."
     config = load_config()
     config = parse_args(config, ["--test-embed"])
     documents = load_documents(config)
@@ -39,6 +41,7 @@ def test_import_db():
 
 
 def test_create_chain():
+    "Test create_chain()"
     config = load_config()
     config = parse_args(config, ["--test-embed"])
     chain = create_chain(config)

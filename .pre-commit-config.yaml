@@ -10,8 +10,6 @@ repos:
     - id: debug-statements
     - id: end-of-file-fixer
     - id: forbid-submodules
-    - id: name-tests-test
-      args: ['--django']
     - id: sort-simple-yaml
       files: config.yaml
     - id: trailing-whitespace

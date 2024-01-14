@@ -23,6 +23,10 @@ repos:
     hooks:
     - id: markdownlint
       args: ["--config", ".github/linters/.markdown-lint.yaml"]
+  - repo: https://github.com/ambv/black
+    rev: main
+    hooks:
+      - id: black
   - repo: local
     hooks:
       - id: pylint

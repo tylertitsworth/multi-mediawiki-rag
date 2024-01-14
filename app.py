@@ -168,8 +168,7 @@ async def update_cl(config, settings):
 # https://docs.chainlit.io/examples/qa
 @cl.on_chat_start
 async def on_chat_start():
-    """Send a chat start message to the chat and load the model config.
-    """
+    "Send a chat start message to the chat and load the model config."
     config = load_config()
     cl.user_session.set("config", config)
     await update_cl(config, None)

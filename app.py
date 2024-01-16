@@ -1,8 +1,10 @@
 from pathlib import Path
 import chainlit as cl
+from chainlit.context import init_http_context
 from chainlit.input_widget import Slider, TextInput
 from chainlit.playground.config import add_llm_provider
 from chainlit.playground.providers.langchain import LangchainGenericProvider
+from chainlit.server import app
 from langchain_community.chat_models import ChatOllama
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -13,6 +15,7 @@ from langchain.chains import ConversationalRetrievalChain
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
 from embed import load_config
+from utils.api import Query
 
 
 def setup_memory():
@@ -217,3 +220,29 @@ async def setup_agent(settings):
     """
     config = cl.user_session.get("config")
     await update_cl(config, settings)
+
+
+# http://localhost:8000/docs
+@app.post("/query")
+async def prompt(query: Query):
+    """Prompt the user for a query.
+
+    Args:
+        query (Query): prompt with optional chat settings as FastAPI object
+
+    Returns:
+        dict: llm chain response
+    """
+    init_http_context()
+    config = load_config()
+    settings = ["num_sources", "temperature", "repeat_penalty", "top_k", "top_p"]
+    for setting in settings:
+        config["settings"][setting] = query.__dict__[setting]
+    chain = create_chain(config)
+    message = cl.Message(content=query.prompt)
+    res = await cl.make_async(chain)(
+        message.content,
+        callbacks=[cl.LangchainCallbackHandler()],
+    )
+
+    return res

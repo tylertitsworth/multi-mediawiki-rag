@@ -40,7 +40,9 @@ repos:
         entry: pytest
         language: system
         types: [python]
-        args: ["test", "-W", "ignore::DeprecationWarning"]
+        args: ["-W", "ignore::DeprecationWarning"]
+        pass_filenames: false
+        always_run: true
       - id: cypress
         name: cypress
         entry: bash

@@ -1,10 +1,14 @@
-# pip install discord py-cord
+# pip install discord
+# pip uninstall discord.py
+# pip install py-cord
 import os
+import time
 
 # from typing import Optional
 import discord
 import dotenv
-from requests import post
+from requests import get, post
+
 
 dotenv.load_dotenv()
 bot = discord.Bot()
@@ -33,23 +37,28 @@ async def on_ready():
 @bot.command(description="Ask Volo a question.")
 async def ask(ctx, prompt: str):
     """Question asked by user via slash command.
-
     Args:
         ctx (Context): discord command context metadata
         prompt (str): command body
     """
     # API Endpoint for the POST request
-    api_url = "http://localhost:8000/query"
+    api_url = "http://localhost:8000"
     # Your API Request Payload
     payload = {
         "prompt": prompt,
     }
 
+    if not get(f"{api_url}/ping", timeout=5).json() == {"status": "Healthy"}:
+        await ctx.respond(
+            content="Looks like I'm offline at the moment, I've asked the kind gods at Huggingface to restart my engine and I'll get back to you in a jiffy!"
+        )
+        time.sleep(240)
     await ctx.respond(f"{ctx.author.mention} asked: {prompt}")
-
-    response = post(api_url, json=payload, timeout=3600).json()
-
-    embed = discord.Embed(title=response["answer"], description="", color=0xB431BD)
+    response = post(f"{api_url}/query", json=payload, timeout=3600)
+    response = response.json()
+    embed = discord.Embed(
+        title=response["question"], description=response["answer"], color=0xB431BD
+    )
     for source in response["source_documents"]:
         page, wiki = source["metadata"]["source"].split(" - ")
         embed.add_field(
@@ -59,8 +68,7 @@ async def ask(ctx, prompt: str):
             inline=False,
         )
     # Printing the API response to the user
-    await ctx.respond(content=response["question"], embed=embed)
+    await ctx.respond(content=ctx.author.mention, embed=embed)
 
 
-# Run the bot with your token
 bot.run(str(os.getenv("TOKEN")))

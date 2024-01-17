@@ -10,7 +10,7 @@ describe('POST /query', () => {
       method: 'POST',
       url: 'http://localhost:8000/query',
       body: {
-        'prompt': 'How many eyestalks does a Beholder have?'
+        prompt: 'How many eyestalks does a Beholder have?'
       },
       failOnStatusCode: false
     }).then((response) => {

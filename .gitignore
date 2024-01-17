@@ -1,5 +1,5 @@
 **__pycache__**
-.chainlit
+.chainlit/*.db
 .env
 .files
 .pytest_cache/

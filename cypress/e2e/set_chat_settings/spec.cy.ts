@@ -16,7 +16,7 @@ describe('set_chat_settings', () => {
     cy.get('#temperature').should('have.value', '0.7')
 
     cy.get('#repeat_penalty').type('{upArrow}{upArrow}').trigger('change')
-    cy.get('#repeat_penalty').should('have.value', '1.5')
+    cy.get('#repeat_penalty').should('have.value', '1.8')
 
     cy.get('#top_k').type('{upArrow}{upArrow}').trigger('change')
     cy.get('#top_k').should('have.value', '22')
@@ -32,7 +32,7 @@ describe('set_chat_settings', () => {
     cy.get('#chat-settings-open-modal').click()
     cy.get('#num_sources').should('have.value', '5')
     cy.get('#temperature').should('have.value', '0.7')
-    cy.get('#repeat_penalty').should('have.value', '1.5')
+    cy.get('#repeat_penalty').should('have.value', '1.8')
     cy.get('#top_k').should('have.value', '22')
     cy.get('#top_p').should('have.value', '0.77')
 

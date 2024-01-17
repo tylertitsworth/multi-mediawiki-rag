@@ -31,15 +31,7 @@ async def on_ready():
 
 
 @bot.command(description="Ask Volo a question.")
-async def ask(
-    ctx,
-    prompt: str,
-    # num_sources: Optional[int],
-    # temperature: Optional[float],
-    # repeat_penalty: Optional[float],
-    # top_k: Optional[int],
-    # top_p: Optional[float],
-):
+async def ask(ctx, prompt: str):
     """Question asked by user via slash command.
 
     Args:
@@ -51,14 +43,7 @@ async def ask(
     # Your API Request Payload
     payload = {
         "prompt": prompt,
-        # "num_sources": num_sources,
-        # "temperature": temperature,
-        # "repeat_penalty": repeat_penalty,
-        # "top_k": top_k,
-        # "top_p": top_p,
     }
-    # await ctx.respond(f"{ctx.author.mention} asked: _{prompt}_")
-    # Making the POST Request
 
     await ctx.respond(f"{ctx.author.mention} asked: {prompt}")
 

@@ -13,7 +13,7 @@ if not torch.cuda.is_available():
     torch.set_num_threads(torch.get_num_threads() * 2)
 
 
-def parse_args(config, args):
+def parse_args(config: dict, args: list):
     """Parses command line arguments.
 
     Args:
@@ -53,7 +53,7 @@ def load_config():
     return data
 
 
-def rename_duplicates(documents):
+def rename_duplicates(documents: [Document]):
     """Rename duplicates in a list of documents.
 
     Args:
@@ -74,7 +74,7 @@ def rename_duplicates(documents):
     return documents
 
 
-def load_documents(config):
+def load_documents(config: dict):
     """Load all the documents in the MediaWiki wiki page.
 
     Args:

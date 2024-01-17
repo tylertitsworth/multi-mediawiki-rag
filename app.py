@@ -40,7 +40,7 @@ def setup_memory():
     return memory
 
 
-def import_db(config):
+def import_db(config: dict):
     """Use existing Chroma vectorDB
 
     Args:
@@ -61,7 +61,7 @@ def import_db(config):
     return vectordb
 
 
-def create_chain(config):
+def create_chain(config: dict):
     """Creates a conversation chain from a config file.
 
     Args:
@@ -97,7 +97,7 @@ def create_chain(config):
     return chain
 
 
-async def update_cl(config, settings):
+async def update_cl(config: dict, settings: dict):
     """Update the model configuration.
 
     Args:
@@ -212,7 +212,7 @@ async def on_message(message: cl.Message):
 
 
 @cl.on_settings_update
-async def setup_agent(settings):
+async def setup_agent(settings: dict):
     """Update Chat Settings.
 
     Args:
@@ -223,6 +223,16 @@ async def setup_agent(settings):
 
 
 # http://localhost:8000/docs
+@app.get("/ping")
+async def ping():
+    """Ping the status of the server.
+
+    Returns:
+        dict: healthcheck
+    """
+    return {"status": "Healthy"}
+
+
 @app.post("/query")
 async def prompt(query: Query):
     """Prompt the user for a query.

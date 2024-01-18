@@ -24,4 +24,4 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt
 EXPOSE 7860
 
 ENTRYPOINT []
-CMD ["bash", "-c", "/bin/ollama serve & chainlit run app.py -h --port 7860"]
+CMD ["bash", "-c", "/bin/ollama serve & chainlit run app.py -h -d --port 7860"]

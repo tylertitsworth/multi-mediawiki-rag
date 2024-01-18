@@ -7,9 +7,11 @@ import time
 # from typing import Optional
 import discord
 import dotenv
-from requests import get, post
+import requests
+from huggingface_hub import HfApi
 
 
+api = HfApi()
 dotenv.load_dotenv()
 bot = discord.Bot()
 
@@ -51,14 +53,17 @@ async def ask(ctx, prompt: str):
     }
 
     try:
-        response = get(f"{api_url}/ping", timeout=5)
-    except:
+        response = requests.get(f"{api_url}/ping", timeout=5)
+    except requests.exceptions.ConnectionError:
         await ctx.respond(
             content="Looks like I'm offline at the moment, I've asked the kind gods at Huggingface to restart my engine and I'll get back to you in a jiffy!"
         )
+        api.restart_space(
+            repo_id="TotalSundae/dungeons-and-dragons", token=str(os.getenv("HF_TOKEN"))
+        )
         time.sleep(240)
     await ctx.respond(f"{ctx.author.mention} asked: {prompt}")
-    response = post(f"{api_url}/query", json=payload, timeout=3600)
+    response = requests.post(f"{api_url}/query", json=payload, timeout=3600)
     response = response.json()
     embed = discord.Embed(
         title=response["question"], description=response["answer"], color=0xB431BD

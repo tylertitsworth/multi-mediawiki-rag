@@ -42,13 +42,17 @@ async def ask(ctx, prompt: str):
         prompt (str): command body
     """
     # API Endpoint for the POST request
-    api_url = "http://localhost:8000"
+    api_url = (
+        "http://localhost:8000"  # "https://totalsundae-dungeons-and-dragons.hf.space"
+    )
     # Your API Request Payload
     payload = {
         "prompt": prompt,
     }
 
-    if not get(f"{api_url}/ping", timeout=5).json() == {"status": "Healthy"}:
+    try:
+        response = get(f"{api_url}/ping", timeout=5)
+    except:
         await ctx.respond(
             content="Looks like I'm offline at the moment, I've asked the kind gods at Huggingface to restart my engine and I'll get back to you in a jiffy!"
         )

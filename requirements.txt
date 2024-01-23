@@ -4,6 +4,6 @@ git+https://github.com/mediawiki-utilities/python-mwtypes@updates_schema_0.11
 chainlit==1.0.101
 chromadb==0.4.22
 # https://github.com/langchain-ai/langchain/issues/14980
-langchain==0.1.0
+langchain==0.1.2
 mwparserfromhell==0.6.6
 sentence-transformers==2.2.2

@@ -6,4 +6,4 @@ chromadb==0.4.22
 # https://github.com/langchain-ai/langchain/issues/14980
 langchain==0.1.2
 mwparserfromhell==0.6.6
-sentence-transformers==2.2.2
+sentence-transformers==2.3.0

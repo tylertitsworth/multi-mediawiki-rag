@@ -1,8 +1,11 @@
 import sys
 from collections import namedtuple
+from typing import Any
 import argparse
 import yaml
 import torch
+from tqdm.contrib.concurrent import process_map
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import MWDumpLoader
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -74,8 +77,48 @@ def rename_duplicates(documents: [Document]):
     return documents
 
 
+def load_document(wiki: tuple):
+    """Loads an xml file of mediawiki pages into document format.
+
+    Args:
+        wiki (str): name of the wiki
+
+    Returns:
+        list(Document): input documents from mediawikis config with modified source metadata
+    """
+    # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
+    loader = MWDumpLoader(
+        encoding="utf-8",
+        file_path=f"{wiki[0]}/{wiki[1]}_pages_current.xml",
+        # https://www.mediawiki.org/wiki/Help:Namespaces
+        namespaces=[0],
+        skip_redirects=True,
+        stop_on_error=False,
+    )
+    # For each Document provided:
+    # Modify the source metadata by accounting for duplicates (<name>_n)
+    # And add the mediawiki title (<name>_n - <wikiname>)
+
+    return [
+        Document(doc.page_content, {"source": doc.metadata["source"] + f" - {wiki[1]}"})
+        for doc in rename_duplicates(loader.load())
+    ]
+
+
+class CustomTextSplitter(RecursiveCharacterTextSplitter):
+    """Creates a custom Character Text Splitter.
+
+    Args:
+        RecursiveCharacterTextSplitter (RecursiveCharacterTextSplitter): Generates chunks based on different separator rules
+    """
+
+    def __init__(self, **kwargs: Any) -> None:
+        separators = [r"\w(=){3}\n", r"\w(=){2}\n", r"\n\n", r"\n", r"\s"]
+        super().__init__(separators=separators, keep_separator=False, **kwargs)
+
+
 def load_documents(config: dict):
-    """Load all the documents in the MediaWiki wiki page.
+    """Load all the documents in the MediaWiki wiki page using multithreading.
 
     Args:
         config (dict): items in config.yaml
@@ -83,26 +126,32 @@ def load_documents(config: dict):
     Returns:
         list(Document): input documents from mediawikis config with modified source metadata
     """
-    documents = []
-    for dump in config["mediawikis"]:
-        # https://python.langchain.com/docs/integrations/document_loaders/mediawikidump
-        loader = MWDumpLoader(
-            encoding="utf-8",
-            file_path=f'{config["source"]}/{dump}_pages_current.xml',
-            # https://www.mediawiki.org/wiki/Help:Namespaces
-            namespaces=[0],
-            skip_redirects=True,
-            stop_on_error=False,
-        )
-        # For each Document provided:
-        # Modify the source metadata by accounting for duplicates (<name>_n)
-        # And add the mediawiki title (<name>_n - <wikiname>)
-        documents.extend(
-            Document(
-                doc.page_content, {"source": doc.metadata["source"] + f" - {dump}"}
-            )
-            for doc in rename_duplicates(loader.load())
-        )
+
+    documents = sum(
+        process_map(
+            load_document,
+            [(config["source"], wiki) for wiki in config["mediawikis"]],
+            desc="Loading Documents",
+            max_workers=torch.get_num_threads(),
+        ),
+        [],
+    )
+    splitter = CustomTextSplitter(
+        add_start_index=True,
+        chunk_size=1000,
+        is_separator_regex=True,
+    )
+    documents = sum(
+        process_map(
+            splitter.split_documents,
+            [[doc] for doc in documents],
+            chunksize=1,
+            desc="Splitting Documents",
+            max_workers=torch.get_num_threads(),
+        ),
+        [],
+    )
+    documents = rename_duplicates(documents)
 
     return documents
 
@@ -110,7 +159,6 @@ def load_documents(config: dict):
 if __name__ == "__main__":
     config = load_config()
     config = parse_args(config, sys.argv[1:])
-    print("Loading Documents")
     documents = load_documents(config)
     print(f"Embedding {len(documents)} Documents, this may take a while.")
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub

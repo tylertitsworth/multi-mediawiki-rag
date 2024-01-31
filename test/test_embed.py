@@ -1,6 +1,12 @@
 from collections import namedtuple
 import yaml
-from embed import parse_args, load_config, rename_duplicates, load_documents
+from embed import (
+    parse_args,
+    load_config,
+    rename_duplicates,
+    load_document,
+    load_documents,
+)
 
 Document = namedtuple("Document", ["page_content", "metadata"])
 
@@ -35,15 +41,40 @@ def test_rename_duplicates():
     assert documents[0].metadata["source"] != renamed_documents[1].metadata["source"]
 
 
+def test_load_document():
+    "Test load_document()."
+    config = load_config()
+    wiki = (config["source"], "dnd5e")
+    documents = load_document(wiki)
+    beholder_page = [
+        document
+        for document in documents
+        if document.metadata["source"] == "Beholder - dnd5e"
+    ]
+    assert "From Monster Manual, page 28." in beholder_page[0].page_content
+    assert {"source": "Beholder - dnd5e"} == beholder_page[0].metadata
+
+
 def test_load_documents():
     "Test load_documents()."
     config = load_config()
     config = parse_args(config, ["--test-embed"])
     documents = load_documents(config)
-    [beholder_page] = [
+    beholder_page = [
         document
         for document in documents
         if document.metadata["source"] == "Beholder - dnd5e"
     ]
-    assert "From Monster Manual, page 28." in beholder_page.page_content
-    assert {"source": "Beholder - dnd5e"} == beholder_page.metadata
+    beholder_page_1 = [
+        document
+        for document in documents
+        if document.metadata["source"] == "Beholder - dnd5e_1"
+    ]
+    assert "From Monster Manual, page 28." in beholder_page[0].page_content
+    assert {"source": "Beholder - dnd5e", "start_index": -1} == beholder_page[
+        0
+    ].metadata
+    assert "Eye Rays." in beholder_page_1[0].page_content
+    assert {"source": "Beholder - dnd5e_1", "start_index": -1} == beholder_page_1[
+        0
+    ].metadata

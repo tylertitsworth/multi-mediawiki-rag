@@ -7,22 +7,22 @@ introduction: Ah my good fellow!
 mediawikis:
   # - dnd4e
   - dnd5e
-  # - darksun
+  - darksun
   - dragonlance
   - eberron
   # - exandria
   - forgottenrealms
   - greyhawk
-  # - planescape
+  - planescape
   # - ravenloft
-  # - spelljammer
+  - spelljammer
 # Ollama
 model: volo
 question: How many eyestalks does a Beholder have?
 settings:
-  num_sources: 4
-  repeat_penalty: 1.6
-  temperature: 0.3
+  num_sources: 10
+  repeat_penalty: 1.8
+  temperature: 0
   top_k: 20
   top_p: 0.35
 # Sources Path

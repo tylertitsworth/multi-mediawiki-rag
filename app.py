@@ -200,7 +200,10 @@ async def on_message(message: cl.Message):
             source_name = source_doc.metadata["source"]
             # Create the text element referenced in the message
             text_elements.append(
-                cl.Text(content=source_doc.page_content, name=source_name)
+                cl.Text(
+                    content=source_doc.page_content,
+                    name=source_name,
+                )
             )
         source_names = [text_el.name for text_el in text_elements]
         if source_names:

@@ -4,6 +4,7 @@ FROM neural-chat
 PARAMETER stop [INST]
 PARAMETER stop ```
 PARAMETER stop ##
+PARAMETER stop User:
 
 TEMPLATE """{{- if .First }}
 ### System:

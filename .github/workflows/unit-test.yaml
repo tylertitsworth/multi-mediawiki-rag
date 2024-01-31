@@ -58,6 +58,10 @@ jobs:
           --include memory/* \
           --local-dir . \
           --local-dir-use-symlinks False
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+          --include .chainlit/* \
+          --local-dir . \
+          --local-dir-use-symlinks False
         env:
           HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Setup Ollama

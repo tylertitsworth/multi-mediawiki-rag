@@ -59,7 +59,7 @@ jobs:
           --local-dir . \
           --local-dir-use-symlinks False
           huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include .chainlit/* \
+          --include .chainlit/.lanchain.db \
           --local-dir . \
           --local-dir-use-symlinks False
         env:

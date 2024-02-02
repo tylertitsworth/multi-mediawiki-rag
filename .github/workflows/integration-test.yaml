@@ -47,6 +47,10 @@ jobs:
           --include *.xml \
           --local-dir . \
           --local-dir-use-symlinks False
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+          --include data \
+          --local-dir . \
+          --local-dir-use-symlinks False
         env:
           HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Create Embeddings
@@ -59,23 +63,29 @@ jobs:
           bash -c "ollama serve & pip install pytest && pytest -W ignore::DeprecationWarning"
       - uses: actions/cache/save@v4
         with:
-          key: ${{ runner.os }}-test-embeddings
+          key: ${{ github.run_number }}-test-embeddings
           path: data/
       - uses: actions/cache/save@v4
         with:
-          key: ${{ runner.os }}-memory
+          key: ${{ github.run_number }}-memory
           path: memory/
   e2e-test:
       needs: [embed-test]
       runs-on: ubuntu-latest
       steps:
+      - uses: actions/checkout@v4
+      - name: Setup Ollama
+        run: |
+          curl https://ollama.ai/install.sh | sh
+          sleep 5
+          ollama create volo -f ./Modelfile
       - uses: actions/cache/restore@v4
         with:
-          key: ${{ runner.os }}-test-embeddings
+          key: ${{ github.run_number }}-test-embeddings
           path: data
       - uses: actions/cache/restore@v4
         with:
-          key: ${{ runner.os }}-memory
+          key: ${{ github.run_number }}-memory
           path: memory
       - uses: cypress-io/github-action@v6
         with:

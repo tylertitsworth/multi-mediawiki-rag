@@ -46,10 +46,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Python Requirements
         run: python -m pip install -r requirements.txt
-      - uses: actions/cache/restore@v4
-        with:
-          key: ${{ runner.os }}-test-embeddings
-          path: data
       - name: Setup Ollama
         run: |
           curl https://ollama.ai/install.sh | sh

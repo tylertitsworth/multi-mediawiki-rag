@@ -63,7 +63,7 @@ jobs:
           bash -c "ollama serve & pip install pytest && pytest -W ignore::DeprecationWarning"
       - uses: actions/cache/save@v4
         with:
-          key: ${{ github.run_number }}-test-embeddings
+          key: test-embeddings-${{ github.run_id }}-${{ github.run_attempt }}
           path: data/
   e2e-test:
       needs: [embed-test]
@@ -79,8 +79,10 @@ jobs:
           ollama create volo -f ./Modelfile
       - uses: actions/cache/restore@v4
         with:
-          key: ${{ github.run_number }}-test-embeddings
+          key: test-embeddings-${{ github.run_id }}-${{ github.run_attempt }}
           path: test_data
+          restore-keys: |
+            test-embeddings-
       - name: Download Chat History
         run: |
           python -m pip install -U "huggingface-hub[cli]" hf_transfer

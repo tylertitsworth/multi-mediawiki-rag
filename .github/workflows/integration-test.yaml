@@ -48,7 +48,7 @@ jobs:
           --local-dir . \
           --local-dir-use-symlinks False
           huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include data/* \
+          --include test_data/* \
           --local-dir . \
           --local-dir-use-symlinks False
         env:

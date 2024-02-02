@@ -48,9 +48,10 @@ jobs:
           --local-dir . \
           --local-dir-use-symlinks False
           huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include test_data/* \
+          --include data/* \
           --local-dir . \
           --local-dir-use-symlinks False
+          mv data/ test_data/
         env:
           HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Create Embeddings

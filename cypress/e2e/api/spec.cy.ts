@@ -2,7 +2,7 @@ describe('test api', () => {
   before(() => {
     cy.visit('/')
     cy.wait(30000)
-    cy.get('#chat-input').type('How many eyestalks does a beholder have?{enter}')
+    cy.get('#chat-input').type('What is the Armor Class of a Beholder?{enter}')
     cy.get('.playground-button').should('exist').click()
   })
   it('GET /ping', () => {
@@ -19,7 +19,7 @@ describe('test api', () => {
       method: 'POST',
       url: 'http://localhost:8000/query',
       body: {
-        prompt: 'How many eyestalks does a Beholder have?'
+        prompt: 'What is the Armor Class of a Beholder?'
       },
       failOnStatusCode: false
     }).then((response) => {

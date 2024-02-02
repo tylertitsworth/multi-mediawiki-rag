@@ -2,7 +2,7 @@ describe('PromptPlayground', () => {
   beforeEach(() => {
     cy.visit('/')
     cy.wait(30000)
-    cy.get('#chat-input').type('How many eyestalks does a beholder have?{enter}')
+    cy.get('#chat-input').type('What is the Armor Class of a Beholder?{enter}')
     cy.get('.playground-button').should('exist').click()
   })
   it('template variables', () => {
@@ -13,7 +13,7 @@ describe('PromptPlayground', () => {
     cy.get('#submit-prompt').should('exist')
     cy.get('.completion-editor [contenteditable]').should(
       'contain',
-      'ten eyestalks'
+      '18'
     )
   })
   it('chat settings', () => {

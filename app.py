@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import chainlit as cl
 from chainlit.context import init_http_context
@@ -14,7 +15,7 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
-from embed import load_config
+from embed import load_config, parse_args
 from utils.api import Query
 
 
@@ -173,6 +174,9 @@ async def update_cl(config: dict, settings: dict):
 async def on_chat_start():
     "Send a chat start message to the chat and load the model config."
     config = load_config()
+    if os.getenv("TEST"):
+        config = parse_args(config, ["--test-embed"])
+        print("Running in TEST mode.")
     cl.user_session.set("config", config)
     await update_cl(config, None)
 

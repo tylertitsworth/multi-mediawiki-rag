@@ -73,8 +73,9 @@ jobs:
         with:
           node-version: 18
       - name: Start Chainlit Server
+        shell: bash
         run: |
-          chainlit run app.py -h -c
+          chainlit run app.py -h -c &
           sleep 10
       - uses: cypress-io/github-action@v6
         with:

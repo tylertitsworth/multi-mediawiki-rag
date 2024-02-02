@@ -47,14 +47,6 @@ jobs:
           --include *.xml \
           --local-dir . \
           --local-dir-use-symlinks False
-          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include data/* \
-          --local-dir . \
-          --local-dir-use-symlinks False
-          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include memory/* \
-          --local-dir . \
-          --local-dir-use-symlinks False
         env:
           HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Create Embeddings
@@ -65,13 +57,32 @@ jobs:
           -v $PWD/sources:/home/user/app/sources \
           ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }} \
           bash -c "ollama serve & pip install pytest && pytest -W ignore::DeprecationWarning"
-
+      - uses: actions/cache/save@v4
+        with:
+          key: ${{ runner.os }}-test-embeddings
+          path: data/
+      - uses: actions/cache/save@v4
+        with:
+          key: ${{ runner.os }}-memory
+          path: memory/
+  e2e-test:
+      needs: [embed-test]
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/cache/restore@v4
+        with:
+          key: ${{ runner.os }}-test-embeddings
+          path: data
+      - uses: actions/cache/restore@v4
+        with:
+          key: ${{ runner.os }}-memory
+          path: memory
       - uses: cypress-io/github-action@v6
         with:
           config-file: ${{ github.workspace }}/cypress/cypress.config.ts
           record: true
           start: chainlit run app.py -h -c
-          wait-on: 'http://localhost:8080'
+          wait-on: 'http://localhost:8000'
           wait-on-timeout: 10
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

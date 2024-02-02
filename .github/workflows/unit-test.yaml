@@ -71,6 +71,15 @@ jobs:
           ollama create volo -f ./Modelfile
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
-      - name: Run Cypress
-        run: bash cypress/test.sh
+          node-version: 18
+      - name: Start Chainlit Server
+        run: |
+          chainlit run app.py -h -c
+          sleep 10
+      - uses: cypress-io/github-action@v6
+        with:
+          config-file: ${{ github.workspace }}/cypress/cypress.config.ts
+          record: true
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}

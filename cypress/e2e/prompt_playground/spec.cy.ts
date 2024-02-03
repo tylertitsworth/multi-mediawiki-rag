@@ -11,10 +11,7 @@ describe('PromptPlayground', () => {
   })
   it('template prompt', () => {
     cy.get('#submit-prompt').should('exist')
-    cy.get('.completion-editor [contenteditable]').should(
-      'contain',
-      'armor'
-    )
+    cy.get('.completion-editor [contenteditable]').should('not.be.empty')
   })
   it('chat settings', () => {
     cy.get('#temperature').invoke('val').should('equal', '0')

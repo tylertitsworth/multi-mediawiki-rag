@@ -71,6 +71,9 @@ def create_chain(config: dict):
     Returns:
         BaseConversationalRetrievalChain: chain for having a conversation based on retrieved documents
     """
+    if os.getenv("TEST"):
+        config = parse_args(config, ["--test-embed"])
+        print("Running in TEST mode.")
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     memory = setup_memory()
     vectordb = import_db(config)
@@ -174,9 +177,6 @@ async def update_cl(config: dict, settings: dict):
 async def on_chat_start():
     "Send a chat start message to the chat and load the model config."
     config = load_config()
-    if os.getenv("TEST"):
-        config = parse_args(config, ["--test-embed"])
-        print("Running in TEST mode.")
     cl.user_session.set("config", config)
     await update_cl(config, None)
 

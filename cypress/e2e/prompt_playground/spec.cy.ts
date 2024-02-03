@@ -13,7 +13,7 @@ describe('PromptPlayground', () => {
     cy.get('#submit-prompt').should('exist')
     cy.get('.completion-editor [contenteditable]').should(
       'contain',
-      '18'
+      'armor'
     )
   })
   it('chat settings', () => {

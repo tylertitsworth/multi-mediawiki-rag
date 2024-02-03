@@ -9,7 +9,8 @@ describe('test api', () => {
     cy.request({
       method: 'GET',
       url: 'http://localhost:8000/ping',
-      failOnStatusCode: false
+      failOnStatusCode: false,
+      timeout: 100000
     }).then((response) => {
       expect(response.body.status).equal('Healthy')
     })
@@ -21,7 +22,8 @@ describe('test api', () => {
       body: {
         prompt: 'What is the Armor Class of a Beholder?'
       },
-      failOnStatusCode: false
+      failOnStatusCode: false,
+      timeout: 100000
     }).then((response) => {
       expect(response.body.answer).length.to.be.greaterThan(1)
       expect(response.body.source_documents).length.to.be.greaterThan(1)

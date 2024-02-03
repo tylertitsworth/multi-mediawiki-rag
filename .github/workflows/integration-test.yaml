@@ -59,7 +59,7 @@ jobs:
           -u root -w /home/user/app \
           -v $PWD/data:/home/user/app/test_data \
           -v $PWD/sources:/home/user/app/sources \
-          -v $PWD/memory:/home/user/app/memory
+          -v $PWD/memory:/home/user/app/memory \
           ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }} \
           bash -c "ollama serve & pip install pytest && pytest -W ignore::DeprecationWarning"
       - uses: actions/cache/save@v4
@@ -86,15 +86,20 @@ jobs:
           --include data/* \
           --local-dir . \
           --local-dir-use-symlinks False
-          mv data/* test_data/
         env:
           HF_HUB_ENABLE_HF_TRANSFER: 1
+      - name: Move Data
+        run: |
+          mkdir test_data
+          mv data/* test_data/
       - uses: actions/cache/restore@v4
+        id: cache
         with:
           fail-on-cache-miss: true
           key: memory-${{ github.run_id }}-${{ github.run_attempt }}
           path: memory/
       - uses: cypress-io/github-action@v6
+        if: steps.cache.outputs.cache-hit == 'true'
         with:
           config-file: ${{ github.workspace }}/cypress/cypress.config.ts
           record: true

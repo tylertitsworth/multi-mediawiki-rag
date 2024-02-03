@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import chainlit as cl
 from chainlit.context import init_http_context
@@ -14,7 +15,7 @@ from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
-from embed import load_config
+from embed import load_config, parse_args
 from utils.api import Query
 
 
@@ -70,6 +71,9 @@ def create_chain(config: dict):
     Returns:
         BaseConversationalRetrievalChain: chain for having a conversation based on retrieved documents
     """
+    if os.getenv("TEST"):
+        config = parse_args(config, ["--test-embed"])
+        print("Running in TEST mode.")
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
     memory = setup_memory()
     vectordb = import_db(config)
@@ -200,7 +204,10 @@ async def on_message(message: cl.Message):
             source_name = source_doc.metadata["source"]
             # Create the text element referenced in the message
             text_elements.append(
-                cl.Text(content=source_doc.page_content, name=source_name)
+                cl.Text(
+                    content=source_doc.page_content,
+                    name=source_name,
+                )
             )
         source_names = [text_el.name for text_el in text_elements]
         if source_names:

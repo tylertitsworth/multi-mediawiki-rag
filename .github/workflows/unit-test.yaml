@@ -59,7 +59,7 @@ jobs:
           config-file: ${{ github.workspace }}/cypress/cypress.config.ts
           record: true
           spec: cypress/e2e/on_chat_start/spec.cy.ts
-          start: chainlit run app.py -h -c
+          start: chainlit run app.py -h
           wait-on: 'http://localhost:8000'
           wait-on-timeout: 10
         env:
@@ -70,7 +70,7 @@ jobs:
           config-file: ${{ github.workspace }}/cypress/cypress.config.ts
           record: true
           spec: cypress/e2e/set_chat_settings/spec.cy.ts
-          start: chainlit run app.py -h -c
+          start: chainlit run app.py -h
           wait-on: 'http://localhost:8000'
           wait-on-timeout: 10
         env:

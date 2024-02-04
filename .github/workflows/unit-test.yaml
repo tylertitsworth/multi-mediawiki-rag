@@ -15,6 +15,10 @@ on:
       - 'test/**.py'
       - 'cypress/**/**.ts'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pytest:
     runs-on: ubuntu-latest
@@ -42,20 +46,6 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install Python Requirements
         run: python -m pip install -r requirements.txt
-      - name: Download Sources
-        run: |
-          python -m pip install -U "huggingface-hub[cli]" hf_transfer
-          huggingface-cli login --token ${{ secrets.HF_TOKEN }}
-          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include data/* \
-          --local-dir . \
-          --local-dir-use-symlinks False
-          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include memory/* \
-          --local-dir . \
-          --local-dir-use-symlinks False
-        env:
-          HF_HUB_ENABLE_HF_TRANSFER: 1
       - name: Setup Ollama
         run: |
           curl https://ollama.ai/install.sh | sh
@@ -63,15 +53,26 @@ jobs:
           ollama create volo -f ./Modelfile
       - uses: actions/setup-node@v4
         with:
-          node-version: 16
-      - name: Start Chainlit Server
-        run: |
-          chainlit run app.py -h -c &
-          sleep 5
+          node-version: 18
       - uses: cypress-io/github-action@v6
         with:
           config-file: ${{ github.workspace }}/cypress/cypress.config.ts
           record: true
+          spec: cypress/e2e/on_chat_start/spec.cy.ts
+          start: chainlit run app.py -h
+          wait-on: 'http://localhost:8000'
+          wait-on-timeout: 10
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+      - uses: cypress-io/github-action@v6
+        with:
+          config-file: ${{ github.workspace }}/cypress/cypress.config.ts
+          record: true
+          spec: cypress/e2e/set_chat_settings/spec.cy.ts
+          start: chainlit run app.py -h
+          wait-on: 'http://localhost:8000'
+          wait-on-timeout: 10
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ github.token }}

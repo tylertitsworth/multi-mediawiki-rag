@@ -1,0 +1,28 @@
+---
+name: Embed
+permissions: read-all
+on: workflow_dispatch
+jobs:
+  embed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Python Requirements
+        run: pip install -r requirements.txt
+      - name: Download Sources and Data
+        run: |
+          python -m pip install -U "huggingface-hub[cli]" hf_transfer
+          huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+          --include *.xml \
+          --local-dir . \
+          --local-dir-use-symlinks False
+        env:
+          HF_HUB_ENABLE_HF_TRANSFER: 1
+      - name: Embed VectorDB
+        run: python embed.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VectorDB
+          path: data/*
+          if-no-files-found: 'error'

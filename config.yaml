@@ -5,16 +5,16 @@ embeddings_model: sentence-transformers/all-mpnet-base-v2
 introduction: Ah my good fellow!
 # Sources
 mediawikis:
-  # - dnd4e
+  - dnd4e
   - dnd5e
   - darksun
   - dragonlance
   - eberron
-  # - exandria
+  - exandria
   - forgottenrealms
   - greyhawk
   - planescape
-  # - ravenloft
+  - ravenloft
   - spelljammer
 # Ollama
 model: volo

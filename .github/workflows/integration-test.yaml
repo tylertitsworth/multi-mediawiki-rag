@@ -5,6 +5,10 @@ on:
   pull_request_review:
     types: [submitted]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   container-build:
     if: >
@@ -35,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Download Sources
+      - name: Download Sources and Data
         run: |
           python -m pip install -U "huggingface-hub[cli]" hf_transfer
           huggingface-cli login --token ${{ secrets.HF_TOKEN }}
@@ -47,17 +51,62 @@ jobs:
           --include data/* \
           --local-dir . \
           --local-dir-use-symlinks False
-          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
-          --include memory/* \
-          --local-dir . \
-          --local-dir-use-symlinks False
         env:
           HF_HUB_ENABLE_HF_TRANSFER: 1
-      - name: Create Embeddings
+      - name: Test Embedding and Chain Creation
         run: |
           docker run --shm-size=7GB \
           -u root -w /home/user/app \
           -v $PWD/data:/home/user/app/test_data \
           -v $PWD/sources:/home/user/app/sources \
+          -v $PWD/memory:/home/user/app/memory \
           ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }} \
           bash -c "ollama serve & pip install pytest && pytest -W ignore::DeprecationWarning"
+      - uses: actions/cache/save@v4
+        with:
+          path: memory/
+          key: memory-${{ github.run_id }}-${{ github.run_attempt }}
+  e2e-test:
+      needs: [embed-test]
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v4
+      - name: Install Python Requirements
+        run: python -m pip install -r requirements.txt
+      - name: Setup Ollama
+        run: |
+          curl https://ollama.ai/install.sh | sh
+          sleep 5
+          ollama create volo -f ./Modelfile
+      - name: Download Data
+        run: |
+          python -m pip install -U "huggingface-hub[cli]" hf_transfer
+          huggingface-cli login --token ${{ secrets.HF_TOKEN }}
+          huggingface-cli download --repo-type space TotalSundae/dungeons-and-dragons \
+          --include data/* \
+          --local-dir . \
+          --local-dir-use-symlinks False
+        env:
+          HF_HUB_ENABLE_HF_TRANSFER: 1
+      - name: Move Data
+        run: |
+          mkdir test_data
+          mv data/* test_data/
+      - uses: actions/cache/restore@v4
+        id: cache
+        with:
+          fail-on-cache-miss: true
+          key: memory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: memory/
+      - uses: cypress-io/github-action@v6
+        if: steps.cache.outputs.cache-hit == 'true'
+        with:
+          config-file: ${{ github.workspace }}/cypress/cypress.config.ts
+          record: true
+          start: chainlit run app.py -h
+          wait-on: 'http://localhost:8000'
+          wait-on-timeout: 10
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+          TEST: true

@@ -44,12 +44,12 @@ jobs:
     steps:
       - uses: docker/login-action@v3
         with:
-          registry: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.number }}
+          registry: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}
           username: ${{ github.actor }}
           password: ${{ github.token }}
       - uses: aquasecurity/trivy-action@0.17.0
         with:
-          image-ref: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}
+          image-ref: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.number }}
           format: template
           template: '@/contrib/sarif.tpl'
           output: trivy-results-${{ github.repository }}.sarif

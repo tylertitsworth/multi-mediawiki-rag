@@ -7,3 +7,6 @@ langchain==0.1.5
 mwparserfromhell==0.6.6
 sentence-transformers>=2.3.0
 tqdm>=4.66.1
+# Security Fixes
+starlette>=0.36.2
+fastapi>=0.109.1

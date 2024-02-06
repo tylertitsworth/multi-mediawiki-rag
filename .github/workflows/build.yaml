@@ -4,7 +4,7 @@ permissions: read-all
 on:
   push:
     branches:    
-      - tylertitsworth/build-on-push
+      - main
 
 jobs:
   container-build:

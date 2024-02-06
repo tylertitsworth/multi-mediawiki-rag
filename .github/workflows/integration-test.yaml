@@ -47,11 +47,11 @@ jobs:
           image-ref: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}
           format: template
           template: '@/contrib/sarif.tpl'
-          output: 'trivy-results.sarif'
-          severity: 'CRITICAL,HIGH'
+          output: trivy-results-${{ github.repository }}.sarif
+          severity: CRITICAL,HIGH
       - uses: github/codeql-action/upload-sarif@v2
         with:
-          sarif_file: 'trivy-results.sarif'
+          sarif_file: trivy-results-${{ github.repository }}.sarif
   embed-test:
     needs: [container-build]
     runs-on: ubuntu-latest

@@ -49,7 +49,7 @@ jobs:
           password: ${{ github.token }}
       - uses: aquasecurity/trivy-action@0.17.0
         with:
-          image-ref: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.number }}
+          image-ref: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
           format: template
           template: '@/contrib/sarif.tpl'
           output: trivy-results-${{ github.repository }}.sarif

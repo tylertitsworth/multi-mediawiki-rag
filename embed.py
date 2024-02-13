@@ -163,8 +163,8 @@ if __name__ == "__main__":
     print(f"Embedding {len(documents)} Documents, this may take a while.")
     # https://python.langchain.com/docs/integrations/text_embedding/huggingfacehub
     embeddings = HuggingFaceEmbeddings(
-        model_name=config["embeddings_model"],
         cache_folder="./model",
+        model_name=config["embeddings_model"],
         show_progress=True,
     )
     # https://python.langchain.com/docs/integrations/vectorstores/chroma

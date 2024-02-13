@@ -165,7 +165,7 @@ if __name__ == "__main__":
     embeddings = HuggingFaceEmbeddings(
         model_name=config["embeddings_model"],
         cache_folder="./model",
-        show_progress=True
+        show_progress=True,
     )
     # https://python.langchain.com/docs/integrations/vectorstores/chroma
     vectordb = Chroma.from_documents(

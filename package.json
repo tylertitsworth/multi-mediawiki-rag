@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "cypress": "13.6.4",
+    "cypress": "13.6.6",
     "npx": "^10.2.2",
     "shell-exec": "^1.1.2",
     "ts-node": "^10.9.2",

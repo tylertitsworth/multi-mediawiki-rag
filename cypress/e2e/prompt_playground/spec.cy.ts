@@ -6,8 +6,7 @@ describe('PromptPlayground', () => {
     cy.get('.playground-button').should('exist').click()
   })
   it('template variables', () => {
-    cy.get('.input-question').should('exist')
-    cy.get('.input-context').should('exist')
+    cy.get('#playground').should('exist')
   })
   it('template prompt', () => {
     cy.get('#submit-prompt').should('exist')

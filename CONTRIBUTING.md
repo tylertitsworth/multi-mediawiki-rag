@@ -15,7 +15,7 @@ Please review our [Code of Conduct](CODE_OF_CONDUCT.md) to understand the standa
 1. Fork the repository.
 2. Create a new branch for your contribution: `git checkout -b feature/your-feature`.
 3. Install [pre-commit](https://pre-commit.com/), [Docker](https://docs.docker.com/engine/install/), and [NodeJS](https://nodejs.org/en/download).
-4. Follow the repository [pre-requisities](README.md#prerequisites) and [Unit Testing Prerequisites](README.md#unit-testing).
+4. Follow the repository [pre-requisities](README.md#prerequisites) and [Unit Testing Prerequisites](README.md#testing).
 5. Make your changes and commit them: `git commit -m 'Add your feature'`.
 6. Push to the branch: `git push origin feature/your-feature`.
 7. Submit a pull request.

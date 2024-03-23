@@ -1,21 +1,24 @@
 import os
 from pathlib import Path
+
 import chainlit as cl
 from chainlit.context import init_http_context
 from chainlit.input_widget import Slider, TextInput
 from chainlit.playground.config import add_llm_provider
 from chainlit.playground.providers.langchain import LangchainGenericProvider
 from chainlit.server import app
-from langchain_community.chat_models import ChatOllama
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
 from langchain.cache import SQLiteCache
 from langchain.callbacks.manager import CallbackManager
 from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
 from langchain.chains import ConversationalRetrievalChain
 from langchain.globals import set_llm_cache
 from langchain.memory import ChatMessageHistory, ConversationBufferMemory
+from langchain_community.chat_models import ChatOllama
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
+
 from embed import load_config, parse_args
+from graph import create_workflow
 from utils.api import Query
 
 
@@ -177,9 +180,15 @@ async def update_cl(config: dict, settings: dict):
 async def on_chat_start():
     "Send a chat start message to the chat and load the model config."
     config = load_config()
-    cl.user_session.set("config", config)
-    await update_cl(config, None)
-
+    # memory = setup_memory()
+    vectordb = import_db(config)
+    retriever = vectordb.as_retriever(
+        search_kwargs={"k": int(config["settings"]["num_sources"])}
+    )
+    # cl.user_session.set("config", config)
+    # await update_cl(config, None)
+    app = create_workflow(config, retriever)  # , memory)
+    cl.user_session.set("app", app)
     await cl.Message(content=config["introduction"], disable_feedback=True).send()
 
 
@@ -190,13 +199,15 @@ async def on_message(message: cl.Message):
     Args:
         message (cl.Message): User prompt input
     """
-    chain = cl.user_session.get("chain")
-    res = await cl.make_async(chain)(
-        message.content,
-        callbacks=[cl.LangchainCallbackHandler()],
-    )
-    answer = res["answer"]
-    source_documents = res["source_documents"]
+    # chain = cl.user_session.get("chain")
+    app = cl.user_session.get("app")
+    # res = await cl.make_async(chain)(
+    #     message.content,
+    #     callbacks=[cl.LangchainCallbackHandler()],
+    # )
+    res = await cl.make_async(app.invoke)({"keys": {"question": message.content}})
+    answer = res["keys"]["generation"]
+    source_documents = res["keys"]["documents"]
     text_elements = []
 
     if source_documents:

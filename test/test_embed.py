@@ -52,7 +52,11 @@ def test_load_document():
         if document.metadata["source"] == "Beholder - dnd5e"
     ]
     assert "From Monster Manual, page 28." in beholder_page[0].page_content
-    assert {"source": "Beholder - dnd5e"} == beholder_page[0].metadata
+    assert {
+        "source": "Beholder - dnd5e",
+        "wiki": "dnd5e",
+        "title": "Beholder",
+    } == beholder_page[0].metadata
 
 
 def test_load_documents():
@@ -71,10 +75,16 @@ def test_load_documents():
         if document.metadata["source"] == "Beholder - dnd5e_1"
     ]
     assert "From Monster Manual, page 28." in beholder_page[0].page_content
-    assert {"source": "Beholder - dnd5e", "start_index": -1} == beholder_page[
-        0
-    ].metadata
+    assert {
+        "source": "Beholder - dnd5e",
+        "wiki": "dnd5e",
+        "title": "Beholder",
+        "start_index": -1,
+    } == beholder_page[0].metadata
     assert "Eye Rays." in beholder_page_1[0].page_content
-    assert {"source": "Beholder - dnd5e_1", "start_index": -1} == beholder_page_1[
-        0
-    ].metadata
+    assert {
+        "source": "Beholder - dnd5e_1",
+        "wiki": "dnd5e",
+        "title": "Beholder",
+        "start_index": -1,
+    } == beholder_page_1[0].metadata

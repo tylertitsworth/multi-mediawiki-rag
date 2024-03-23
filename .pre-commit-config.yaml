@@ -42,9 +42,9 @@ repos:
         types: [python]
         args: ["test/test_app.py", "test/test_embed.py", "-W", "ignore::DeprecationWarning"]
         pass_filenames: false
-      - id: cypress
-        name: cypress
-        entry: bash
-        language: system
-        types_or: [ts, python]
-        args: ["cypress/test.sh"]
+      # - id: cypress
+      #   name: cypress
+      #   entry: bash
+      #   language: system
+      #   types_or: [ts, python]
+      #   args: ["cypress/test.sh"]

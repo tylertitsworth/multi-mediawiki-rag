@@ -100,7 +100,14 @@ def load_document(wiki: tuple):
     # And add the mediawiki title (<name>_n - <wikiname>)
 
     return [
-        Document(doc.page_content, {"source": doc.metadata["source"] + f" - {wiki[1]}"})
+        Document(
+            doc.page_content,
+            {
+                "source": doc.metadata["source"] + f" - {wiki[1]}",
+                "wiki": wiki[1],
+                "title": doc.metadata["source"],
+            },
+        )
         for doc in rename_duplicates(loader.load())
     ]
 

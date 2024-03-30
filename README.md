@@ -1,6 +1,7 @@
 # Multi Mediawiki RAG Chatbot [![forks - multi-mediawiki-rag](https://img.shields.io/github/forks/tylertitsworth/multi-mediawiki-rag?style=social)](https://github.com/tylertitsworth/multi-mediawiki-rag) [![stars - multi-mediawiki-rag](https://img.shields.io/github/stars/tylertitsworth/multi-mediawiki-rag?style=social)](https://github.com/tylertitsworth/multi-mediawiki-rag)
 
-[![OS - Linux](https://img.shields.io/badge/OS-Linux-blue?logo=linux&logoColor=white)](https://www.linux.org/ "Go to Linux homepage")
+[![OS - Linux](https://img.shields.io/badge/OS-Linux-blue?logo=linux&logoColor=white)](https://www.linux.org/ "Go to Linux homepage")[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftylertitsworth%2Fmulti-mediawiki-rag.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftylertitsworth%2Fmulti-mediawiki-rag?ref=badge_shield)
+
 [![Made with Python](https://img.shields.io/badge/Python->=3.10-blue?logo=python&logoColor=white)](https://python.org "Go to Python homepage")
 [![Hosted on - Huggingface](https://img.shields.io/static/v1?label=Hosted+on&message=Huggingface&color=FFD21E)](https://huggingface.co/spaces/TotalSundae/dungeons-and-dragons)
 [![contributions - welcome](https://img.shields.io/badge/contributions-welcome-4ac41d)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
@@ -28,6 +29,9 @@
     - [Cypress](#cypress)
     - [Pytest](#pytest)
   - [License](#license)
+
+
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftylertitsworth%2Fmulti-mediawiki-rag.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftylertitsworth%2Fmulti-mediawiki-rag?ref=badge_large)
 
 ## About
 

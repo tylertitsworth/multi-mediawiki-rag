@@ -193,4 +193,5 @@ pytest test -W ignore::DeprecationWarning
 
 ## License
 
-Released under [MIT](/LICENSE) by [@tylertitsworth](https://github.com/tylertitsworth).
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftylertitsworth%2Fmulti-mediawiki-rag.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Ftylertitsworth%2Fmulti-mediawiki-rag?ref=badge_large&issueType=license)
+

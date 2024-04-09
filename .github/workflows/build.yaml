@@ -3,7 +3,7 @@ name: Build Container
 permissions: read-all
 on:
   push:
-    branches:    
+    branches:
       - main
 
 jobs:

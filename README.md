@@ -6,7 +6,8 @@
 [![contributions - welcome](https://img.shields.io/badge/contributions-welcome-4ac41d)](https://github.com/tylertitsworth/multi-mediawiki-rag/blob/main/CONTRIBUTING.md)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/8272/badge)](https://www.bestpractices.dev/projects/8272)
 ![Fossa](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ftylertitsworth%2Fmulti-mediawiki-rag.svg?type=shield&skipHeapTracking=true&issueType=license)
-[![pytest](https://github.com/tylertitsworth/multi-mediawiki-rag/workflows/Unit%20Tests/badge.svg)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions??branch=main?query=workflow:"Unit+Tests")
+[![Unit Tests](https://github.com/tylertitsworth/multi-mediawiki-rag/actions/workflows/unit-test.yaml/badge.svg?branch=main)](https://github.com/tylertitsworth/multi-mediawiki-rag/actions/workflows/unit-test.yaml)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/tylertitsworth/multi-mediawiki-rag/main.svg)](https://results.pre-commit.ci/latest/github/tylertitsworth/multi-mediawiki-rag/main)
 
 [Chatbots](https://www.forbes.com/advisor/business/software/what-is-a-chatbot/) are very popular right now. Most openly accessible information is stored in some kind of a [Mediawiki](https://en.wikipedia.org/wiki/MediaWiki). Creating a [RAG](https://research.ibm.com/blog/retrieval-augmented-generation-RAG) Chatbot is becoming a very powerful alternative to traditional data gathering. This project is designed to create a basic format for creating your own chatbot to run locally on linux.
 

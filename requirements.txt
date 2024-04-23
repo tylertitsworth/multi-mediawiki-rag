@@ -1,7 +1,7 @@
 # https://github.com/mediawiki-utilities/python-mwxml/pull/19
 git+https://github.com/gdedrouas/python-mwxml@xml_format_0.11
 git+https://github.com/mediawiki-utilities/python-mwtypes@updates_schema_0.11
-chainlit==1.0.503
+chainlit==1.0.504
 chromadb>=0.4.22
 fastapi>=0.109.1
 langchain==0.1.16

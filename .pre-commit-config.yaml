@@ -21,7 +21,7 @@ repos:
       files: config.yaml
     - id: trailing-whitespace
   - repo: https://github.com/hadolint/hadolint
-    rev: v2.12.1-beta
+    rev: v2.13.0-beta
     hooks:
       - id: hadolint-docker
         args: ["--config", ".github/linters/.hadolint.yaml"]
@@ -31,7 +31,7 @@ repos:
     - id: markdownlint
       args: ["--config", ".github/linters/.markdown-lint.yaml"]
   - repo: https://github.com/psf/black
-    rev: 24.4.0
+    rev: 24.4.2
     hooks:
       - id: black
   - repo: local

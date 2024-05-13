@@ -3,6 +3,10 @@ version: 2
 updates:
   - package-ecosystem: "pip" # See documentation for possible values
     directory: "." # Location of package manifests
+    groups:
+      python-requirements:
+        patterns:
+          - "*"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions" # See documentation for possible values
@@ -11,5 +15,9 @@ updates:
       interval: "weekly"
   - package-ecosystem: "npm"
     directory: "/"
+    groups:
+      node-requirements:
+        patterns:
+          - "*"
     schedule:
       interval: "weekly"

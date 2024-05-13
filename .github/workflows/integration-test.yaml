@@ -47,7 +47,7 @@ jobs:
           registry: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - uses: aquasecurity/trivy-action@0.19.0
+      - uses: aquasecurity/trivy-action@0.20.0
         with:
           image-ref: ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }}
           format: sarif

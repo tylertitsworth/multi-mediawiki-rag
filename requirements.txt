@@ -3,6 +3,7 @@ git+https://github.com/gdedrouas/python-mwxml@xml_format_0.11
 git+https://github.com/mediawiki-utilities/python-mwtypes@updates_schema_0.11
 chainlit==1.1.0
 chromadb>=0.4.22
+discord>=2.3.2
 fastapi>=0.109.1
 langchain==0.1.20
 openai>=1.12.0

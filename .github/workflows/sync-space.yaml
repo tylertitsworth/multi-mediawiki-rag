@@ -26,7 +26,7 @@ jobs:
         deleted_files=$(git diff --name-only --diff-filter=A HEAD HEAD~1)
         upload_files() {
             local file=$1
-            if [ "$file" != "README.md" ] && [ "$file" != ".gitignore" ] && [ "$file" != ".chainlit/config.toml" ] && [ "$file" != "Modelfile" ]; then
+            if [ "$file" != "README.md" ] && [ "$file" != ".gitignore" ] && [ "$file" != ".chainlit/config.toml" ] && [ "$file" != "Modelfile" ] && [ "$file" != "Dockerfile ]; then
                 huggingface-cli upload --repo-type space TotalSundae/dungeons-and-dragons $file $file
             fi
         }

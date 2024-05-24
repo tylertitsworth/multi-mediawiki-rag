@@ -171,11 +171,15 @@ Access the Chatbot GUI at `http://localhost:8000`.
 
 ```bash
 export DISCORD_BOT_TOKEN=...
-chainlit run discord.py -h
+chainlit run app.py -h
 ```
 
 > [!TIP]
 > Develop locally with [ngrok](https://dashboard.ngrok.com/get-started/setup/linux).
+
+## Hosting
+
+This chatbot is hosted on [Huggingface Spaces](https://huggingface.co/spaces/TotalSundae/dungeons-and-dragons) for free, which means this chatbot is very slow due to the minimal hardware resources allocated to it. Despite this, the provided [Dockerfile](./Dockerfile) provides a generic method for hosting this solution as one unified container, however this method is not ideal and can lead to many issues if used for professional production systems.
 
 ## Testing
 

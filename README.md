@@ -171,7 +171,7 @@ Access the Chatbot GUI at `http://localhost:8000`.
 
 ```bash
 export DISCORD_BOT_TOKEN=...
-chainlit run discord.py -h
+chainlit run app.py -h
 ```
 
 > [!TIP]

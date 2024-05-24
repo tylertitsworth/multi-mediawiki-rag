@@ -14,8 +14,8 @@ describe('PromptPlayground', () => {
   })
   it('chat settings', () => {
     cy.get('#temperature').invoke('val').should('equal', '0')
-    cy.get('#repeat_penalty').invoke('val').should('equal', '1.8')
-    cy.get('#top_k').invoke('val').should('equal', '20')
+    cy.get('#repeat_penalty').invoke('val').should('equal', '2.2')
+    cy.get('#top_k').invoke('val').should('equal', '0')
     cy.get('#top_p').invoke('val').should('equal', '0.35')
   })
 })

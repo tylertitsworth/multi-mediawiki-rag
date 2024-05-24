@@ -20,10 +20,10 @@ mediawikis:
 model: volo
 question: How many eyestalks does a Beholder have?
 settings:
-  num_sources: 10
-  repeat_penalty: 1.8
+  num_sources: 4
+  repeat_penalty: 2.2
   temperature: 0
-  top_k: 20
+  top_k: 0
   top_p: 0.35
 # Sources Path
 source: ./sources

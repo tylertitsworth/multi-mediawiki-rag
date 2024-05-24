@@ -1,15 +1,15 @@
+import argparse
 import sys
 from collections import namedtuple
 from typing import Any
-import argparse
-import yaml
+
 import torch
-from tqdm.contrib.concurrent import process_map
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+import yaml
 from langchain_community.document_loaders import MWDumpLoader
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
-
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from tqdm.contrib.concurrent import process_map
 
 Document = namedtuple("Document", ["page_content", "metadata"])
 if not torch.cuda.is_available():

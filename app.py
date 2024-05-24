@@ -1,18 +1,20 @@
 import os
 from pathlib import Path
+
 import chainlit as cl
 from chainlit.input_widget import Slider, TextInput
 from chainlit.playground.config import add_llm_provider
 from chainlit.playground.providers.langchain import LangchainGenericProvider
+from langchain.chains import ConversationalRetrievalChain
+from langchain.globals import set_llm_cache
+from langchain.memory import ConversationBufferMemory
+from langchain_community.cache import SQLiteCache
+from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_community.chat_models import ChatOllama
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
-from langchain_community.cache import SQLiteCache
-from langchain.callbacks.manager import CallbackManager
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-from langchain.chains import ConversationalRetrievalChain
-from langchain.globals import set_llm_cache
-from langchain.memory import ChatMessageHistory, ConversationBufferMemory
+from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
+
 from embed import load_config, parse_args
 
 

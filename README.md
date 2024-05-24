@@ -26,6 +26,7 @@
       - [Expected Output](#expected-output)
       - [Add Different Document Type to DB](#add-different-document-type-to-db)
     - [Start Chatbot](#start-chatbot)
+    - [Start Discord Bot](#start-discord-bot)
   - [Testing](#testing)
     - [Cypress](#cypress)
     - [Pytest](#pytest)
@@ -70,6 +71,7 @@ multi-mediawiki-rag
 │   │   └── *
 │   └── chroma.sqlite3
 ├── app.py
+├── discord.py
 ├── embed.py
 ├── memory
 │   └── cache.db # Chat Cache
@@ -164,6 +166,16 @@ chainlit run app.py -h
 ```
 
 Access the Chatbot GUI at `http://localhost:8000`.
+
+### Start Discord Bot
+
+```bash
+export DISCORD_BOT_TOKEN=...
+chainlit run discord.py -h
+```
+
+> [!TIP]
+> Develop locally with [ngrok](https://dashboard.ngrok.com/get-started/setup/linux).
 
 ## Testing
 

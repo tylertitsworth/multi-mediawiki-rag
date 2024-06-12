@@ -5,8 +5,8 @@ chainlit==1.1.202
 chromadb>=0.4.22
 discord>=2.3.2
 fastapi>=0.109.1
-langchain==0.2.1
-langchain-community==0.2.1
+langchain==0.2.3
+langchain-community==0.2.4
 openai>=1.12.0
 mwparserfromhell==0.6.6
 sentence-transformers>=2.3.0

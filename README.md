@@ -48,7 +48,6 @@ graph TD;
     hf --LLM--> modelfile
     modelfile[/Modelfile/] --> Ollama
     Ollama(((Ollama))) <-.ChatOllama.-> lc
-    Mem[(Memory)] <--Chat History--> lc
     lc{Langchain} <-.LLMChain.-> cl(((Chainlit)))
     click db href "https://github.com/chroma-core/chroma"
     click hf href "https://huggingface.co/"
@@ -73,8 +72,6 @@ multi-mediawiki-rag
 ├── app.py
 ├── discord.py
 ├── embed.py
-├── memory
-│   └── cache.db # Chat Cache
 └── model
     └── sentence-transformers_all-mpnet-base-v2
         └── *
@@ -89,7 +86,7 @@ These instructions will get you a copy of the project up and running on your loc
 These steps assume you are using a modern Linux OS like [Ubuntu 22.04](https://www.releases.ubuntu.com/jammy/) with [Python 3.10+](https://www.python.org/downloads/release/python-3100/).
 
 ```bash
-apt-get install -y curl git python3-venv sqlite3
+apt-get install -y curl git python3-venv
 git clone https://github.com/tylertitsworth/multi-mediawiki-rag.git
 curl https://ollama.ai/install.sh | sh
 python -m .venv venv

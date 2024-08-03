@@ -1,18 +1,1 @@
-FROM neural-chat
-# FROM ./model/<modelname>/q4_0.bin
-
-PARAMETER stop [INST]
-PARAMETER stop ```
-PARAMETER stop ##
-PARAMETER stop User:
-
-TEMPLATE """{{- if .First }}
-### System:
-{{ .System }}
-{{- end }}
-
-### User:
-{{ .Prompt }}
-
-### Assistant:
-"""
+FROM llama3-groq-tool-use:8b

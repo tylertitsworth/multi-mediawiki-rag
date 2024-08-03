@@ -19,5 +19,4 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 7860
 
-ENTRYPOINT []
-CMD ["bash", "-c", "/bin/ollama serve & ollama create volo -f Modelfile & chainlit run app.py -h -d --port 7860"]
+ENTRYPOINT ["/bin/bash", "entrypoint.sh"]

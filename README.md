@@ -59,22 +59,20 @@ graph TD;
 ### Runtime Filesystem
 
 ```txt
-multi-mediawiki-rag
+multi-mediawiki-rag # $HOME/app
 ├── .chainlit
 │   ├── .langchain.db # Server Cache
 │   └── config.toml # Server Config
+├── app.py
 ├── chainlit.md
 ├── config.yaml
 ├── data # VectorDB
 │   ├── 47e4e036-****-****-****-************
 │   │   └── *
 │   └── chroma.sqlite3
-├── app.py
-├── discord.py
 ├── embed.py
-└── model
-    └── sentence-transformers_all-mpnet-base-v2
-        └── *
+├── entrypoint.sh
+└── requirements.txt
 ```
 
 ## Quickstart

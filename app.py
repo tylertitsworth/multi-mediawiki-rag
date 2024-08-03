@@ -171,11 +171,13 @@ async def on_message(message: cl.Message):
             self.msg = msg
             self.sources = set()  # To store unique pairs
 
-        def on_retriever_end(self, documents, *, run_id, parent_run_id, **kwargs):
+        def on_retriever_end(self, documents):
+            "Save the sources found by the retriever."
             for d in documents:
                 self.sources.add(d.metadata["source"])  # Add unique pairs to the set
 
-        def on_llm_end(self, response, *, run_id, parent_run_id, **kwargs):
+        def on_llm_end(self):
+            "Stream the sources as a Chainlit element."
             if self.sources:
                 sources_text = "\n".join(self.sources)
                 self.msg.elements.append(

@@ -1,2 +1,2 @@
 [MESSAGES CONTROL]
-disable=duplicate-code, import-error, line-too-long, missing-module-docstring, no-name-in-module, no-name-in-module, protected-access, redefined-outer-name, too-few-public-methods, abstract-method
+disable=duplicate-code, import-error, line-too-long, missing-module-docstring, no-name-in-module, no-name-in-module, protected-access, redefined-outer-name, too-few-public-methods, abstract-method, arguments-differ

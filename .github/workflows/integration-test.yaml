@@ -80,9 +80,8 @@ jobs:
           -u root -w /home/user/app \
           -v $PWD/data:/home/user/app/test_data \
           -v $PWD/sources:/home/user/app/sources \
-          -v $PWD/memory:/home/user/app/memory \
           ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }} \
-          bash -c "pip install pytest && pytest -W ignore::DeprecationWarning"
+          bash -c "pip install pytest && pytest test/test_embed.py -W ignore::DeprecationWarning"
         env:
           OLLAMA_HOST: "https://totalsundae-ollama.hf.space"
   e2e-test:

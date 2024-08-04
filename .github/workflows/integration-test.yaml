@@ -114,7 +114,6 @@ jobs:
           mkdir test_data
           mv data/* test_data/
       - uses: cypress-io/github-action@v6
-        if: steps.cache.outputs.cache-hit == 'true'
         with:
           config-file: ${{ github.workspace }}/cypress/cypress.config.ts
           record: true

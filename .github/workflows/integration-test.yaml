@@ -59,15 +59,6 @@ jobs:
     needs: [container-build]
     runs-on: ubuntu-latest
     steps:
-      - uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
       - uses: actions/checkout@v4
       - name: Download Sources and Data
         run: |
@@ -91,24 +82,13 @@ jobs:
           -v $PWD/sources:/home/user/app/sources \
           -v $PWD/memory:/home/user/app/memory \
           ghcr.io/${{ github.repository_owner }}/${{ github.repository }}:pr-${{ github.event.pull_request.number }} \
-          bash -c "ollama serve & pip install pytest && pytest -W ignore::DeprecationWarning"
-      - uses: actions/cache/save@v4
-        with:
-          path: memory/
-          key: memory-${{ github.run_id }}-${{ github.run_attempt }}
+          bash -c "pip install pytest && pytest -W ignore::DeprecationWarning"
+        env:
+          OLLAMA_HOST: "https://totalsundae-ollama.hf.space"
   e2e-test:
       needs: [embed-test]
       runs-on: ubuntu-latest
       steps:
-      - uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
-          android: true
-          dotnet: true
-          haskell: true
-          large-packages: true
-          docker-images: true
-          swap-storage: true
       - uses: actions/checkout@v4
       - name: Install Python Requirements
         run: python -m pip install -r requirements.txt
@@ -117,6 +97,8 @@ jobs:
           curl https://ollama.ai/install.sh | sh
           sleep 5
           ollama create volo -f ./Modelfile
+        env:
+          OLLAMA_HOST: "https://totalsundae-ollama.hf.space"
       - name: Download Data
         run: |
           python -m pip install -U "huggingface-hub[cli]" hf_transfer
@@ -131,12 +113,6 @@ jobs:
         run: |
           mkdir test_data
           mv data/* test_data/
-      - uses: actions/cache/restore@v4
-        id: cache
-        with:
-          fail-on-cache-miss: true
-          key: memory-${{ github.run_id }}-${{ github.run_attempt }}
-          path: memory/
       - uses: cypress-io/github-action@v6
         if: steps.cache.outputs.cache-hit == 'true'
         with:
@@ -149,3 +125,4 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
           TEST: true
+          OLLAMA_HOST: "https://totalsundae-ollama.hf.space"

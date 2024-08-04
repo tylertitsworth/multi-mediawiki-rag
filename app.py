@@ -1,43 +1,20 @@
 import os
-from pathlib import Path
 
 import chainlit as cl
 from chainlit.input_widget import Slider, TextInput
-from chainlit.playground.config import add_llm_provider
-from chainlit.playground.providers.langchain import LangchainGenericProvider
-from langchain.chains import ConversationalRetrievalChain
+from langchain import hub
+from langchain.callbacks.base import BaseCallbackHandler
 from langchain.globals import set_llm_cache
-from langchain.memory import ConversationBufferMemory
-from langchain_community.cache import SQLiteCache
-from langchain_community.chat_message_histories import ChatMessageHistory
-from langchain_community.chat_models import ChatOllama
-from langchain_community.embeddings import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+from langchain.schema.runnable.config import RunnableConfig
+from langchain_chroma import Chroma
+from langchain_community.cache import InMemoryCache
 from langchain_core.callbacks import CallbackManager, StreamingStdOutCallbackHandler
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.runnables import RunnablePassthrough
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_ollama import ChatOllama
 
 from embed import load_config, parse_args
-
-
-def setup_memory():
-    """Setup memory for the memory of the chat.
-
-    Returns:
-        ConversationBufferMemory: buffer for storing conversation memory
-    """
-    Path("memory").mkdir(parents=True, exist_ok=True)
-    # https://python.langchain.com/docs/modules/memory/chat_messages/
-    message_history = ChatMessageHistory()
-    # https://python.langchain.com/docs/modules/memory/
-    memory = ConversationBufferMemory(
-        chat_memory=message_history,
-        memory_key="chat_history",
-        output_key="answer",
-        return_messages=True,
-    )
-    # https://python.langchain.com/docs/integrations/llms/llm_caching
-    set_llm_cache(SQLiteCache(database_path="memory/cache.db"))
-
-    return memory
 
 
 def import_db(config: dict):
@@ -68,14 +45,15 @@ def create_chain(config: dict):
         config (dict): items in config.yaml
 
     Returns:
-        BaseConversationalRetrievalChain: chain for having a conversation based on retrieved documents
+        Runnable: Langchain Runnable for use with ChatOllama
     """
     if os.getenv("TEST"):
         config = parse_args(config, ["--test-embed"])
         print("Running in TEST mode.")
+    set_llm_cache(InMemoryCache())
     callback_manager = CallbackManager([StreamingStdOutCallbackHandler()])
-    memory = setup_memory()
     vectordb = import_db(config)
+    prompt = hub.pull("rlm/rag-prompt")
     # https://python.langchain.com/docs/integrations/llms/ollama
     model = ChatOllama(
         cache=True,
@@ -86,15 +64,16 @@ def create_chain(config: dict):
         top_k=config["settings"]["top_k"],
         top_p=config["settings"]["top_p"],
     )
-    # https://api.python.langchain.com/en/latest/chains/langchain.chains.conversational_retrieval.base.ConversationalRetrievalChain.html
-    chain = ConversationalRetrievalChain.from_llm(
-        chain_type="stuff",
-        llm=model,
-        memory=memory,
-        retriever=vectordb.as_retriever(
-            search_kwargs={"k": int(config["settings"]["num_sources"])}
-        ),
-        return_source_documents=True,
+    chain = (
+        {
+            "context": vectordb.as_retriever(
+                search_kwargs={"k": int(config["settings"]["num_sources"])}
+            ),
+            "question": RunnablePassthrough(),
+        }
+        | prompt
+        | model
+        | StrOutputParser()
     )
 
     return chain
@@ -155,16 +134,6 @@ async def update_cl(config: dict, settings: dict):
             description="Works together with top-k. A higher value will lead to more diverse text. (Default: 0.9)",
         ),
     ]
-    # https://docs.chainlit.io/observability-iteration/prompt-playground/llm-providers#langchain-provider
-    add_llm_provider(
-        LangchainGenericProvider(
-            id=chain.combine_docs_chain.llm_chain.llm._llm_type,
-            name="Ollama",
-            llm=chain.combine_docs_chain.llm_chain.llm,
-            inputs=[input for input in inputs if isinstance(input, Slider)],
-            is_chat=True,
-        )
-    )
     cl.user_session.set("chain", chain)
 
     await cl.ChatSettings(inputs).send()
@@ -174,47 +143,59 @@ async def update_cl(config: dict, settings: dict):
 # https://docs.chainlit.io/examples/qa
 @cl.on_chat_start
 async def on_chat_start():
-    "Send a chat start message to the chat and load the model config."
+    """
+    Triggered at the start of a chat session. It loads the model configuration from a file
+    and sets it in the user session for future use.
+    """
     config = load_config()
     cl.user_session.set("config", config)
-    await update_cl(config, None)
+    await update_cl(config, {})
 
-    await cl.Message(content=config["introduction"], disable_feedback=True).send()
+    await cl.Message(content=config["introduction"]).send()
 
 
 @cl.on_message
 async def on_message(message: cl.Message):
-    """Handle a message.
+    "Chat message handler."
+    runnable = cl.user_session.get("chain")
+    msg = cl.Message(content="")
 
-    Args:
-        message (cl.Message): User prompt input
-    """
-    chain = cl.user_session.get("chain")
-    res = await cl.make_async(chain)(
-        message.content,
-        callbacks=[cl.LangchainCallbackHandler()],
-    )
-    answer = res["answer"]
-    source_documents = res["source_documents"]
-    text_elements = []
+    class PostMessageHandler(BaseCallbackHandler):
+        """
+        Callback handler for handling the retriever and LLM processes.
+        Used to post the sources of the retrieved documents as a Chainlit element.
+        """
 
-    if source_documents:
-        for source_doc in source_documents:
-            source_name = source_doc.metadata["source"]
-            # Create the text element referenced in the message
-            text_elements.append(
-                cl.Text(
-                    content=source_doc.page_content,
-                    name=source_name,
+        def __init__(self, msg: cl.Message):
+            BaseCallbackHandler.__init__(self)
+            self.msg = msg
+            self.sources = set()  # To store unique pairs
+
+        def on_retriever_end(self, documents):
+            "Save the sources found by the retriever."
+            for d in documents:
+                self.sources.add(d.metadata["source"])  # Add unique pairs to the set
+
+        def on_llm_end(self):
+            "Stream the sources as a Chainlit element."
+            if self.sources:
+                sources_text = "\n".join(self.sources)
+                self.msg.elements.append(
+                    cl.Text(name="Sources", content=sources_text, display="inline")
                 )
-            )
-        source_names = [text_el.name for text_el in text_elements]
-        if source_names:
-            answer += f"\nSources: {', '.join(source_names)}"
-        else:
-            answer += "\nNo sources found"
 
-    await cl.Message(content=answer, elements=text_elements).send()
+    async for chunk in runnable.astream(
+        message.content,
+        config=RunnableConfig(
+            callbacks=[
+                cl.LangchainCallbackHandler(),
+                PostMessageHandler(msg),
+            ],
+        ),
+    ):
+        await msg.stream_token(chunk)
+
+    await msg.send()
 
 
 @cl.on_settings_update

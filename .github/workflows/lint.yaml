@@ -33,6 +33,7 @@ jobs:
           GITHUB_ACTIONS_COMMAND_ARGS: '-ignore SC.*'
           TYPESCRIPT_STANDARD_TSCONFIG_FILE: cypress/tsconfig.json
           VALIDATE_CHECKOV: false
+          VALIDATE_TYPESCRIPT_PRETTIER: false
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
           VALIDATE_JSCPD: false

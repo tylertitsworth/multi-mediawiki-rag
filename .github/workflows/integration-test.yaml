@@ -84,6 +84,7 @@ jobs:
           bash -c "pip install pytest && pytest test/test_embed.py -W ignore::DeprecationWarning"
         env:
           OLLAMA_HOST: "https://totalsundae-ollama.hf.space"
+          LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
   e2e-test:
       needs: [embed-test]
       runs-on: ubuntu-latest
@@ -122,5 +123,6 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
+          LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
           TEST: true
           OLLAMA_HOST: "https://totalsundae-ollama.hf.space"

@@ -65,14 +65,15 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
+          LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
       - uses: cypress-io/github-action@v6
         with:
           config-file: ${{ github.workspace }}/cypress/cypress.config.ts
           record: true
-          spec: cypress/e2e/set_chat_settings/spec.cy.ts
           start: chainlit run app.py -h
           wait-on: 'http://localhost:8000'
           wait-on-timeout: 10
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ github.token }}
+          LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}

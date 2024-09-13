@@ -1,9 +1,9 @@
 {
   "dependencies": {
-    "cypress": "13.14.1",
+    "cypress": "13.14.2",
     "npx": "^10.2.2",
     "shell-exec": "^1.1.2",
     "ts-node": "^10.9.2",
-    "typescript": "^5.5.4"
+    "typescript": "^5.6.2"
   }
 }

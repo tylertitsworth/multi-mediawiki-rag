@@ -1,16 +1,16 @@
 # https://github.com/mediawiki-utilities/python-mwxml/pull/19
 git+https://github.com/gdedrouas/python-mwxml@xml_format_0.11
 git+https://github.com/mediawiki-utilities/python-mwtypes@updates_schema_0.11
-chainlit==1.3.1
+chainlit==1.3.2
 chromadb>=0.4.22
 discord>=2.3.2
 fastapi>=0.109.1
-langchain==0.3.4
+langchain==0.3.9
 langchainhub>=0.1.20
 langchain-chroma>=0.1.2
-langchain-community==0.3.3
+langchain-community==0.3.9
 langchain-huggingface>=0.0.3
-langchain-ollama==0.2.0
+langchain-ollama==0.2.1
 openai>=1.12.0
 mwparserfromhell==0.6.6
 sentence-transformers>=2.3.0
